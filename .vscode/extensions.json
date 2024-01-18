@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.jupyter-keymap",
+        "yzhang.markdown-all-in-one",
+        "fabiospampinato.vscode-open-in-github",
+        "analytic-signal.preview-pdf",
+        "ms-dotnettools.dotnet-interactive-vscode",
+        "ms-ceintl.vscode-language-pack-pt-br",
+        "ms-python.vscode-pylance",
+        "ms-python.pylint",
+        "ms-python.python"
+    ]
+}
