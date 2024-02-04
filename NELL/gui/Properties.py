@@ -15,6 +15,6 @@ class Properties:
         i = 0
         for i, (key, value) in enumerate(properties.items(), start=1):
             grid[i, 0] = widgets.Text(value=key, layout=widgets.Layout(width='80px'), disabled=True, bold=True)
-            grid[i, 1] = widgets.Text(value=str(value), layout=widgets.Layout(width='400px'))
+            grid[i, 1] = widgets.Text(desc="str(value)", value=str(value), layout=widgets.Layout(width='150px'), disabled=True)
 
         self.content.children = [grid]

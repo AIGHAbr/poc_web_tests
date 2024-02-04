@@ -1,14 +1,15 @@
 import time
 import ipywidgets as widgets
-from IPython.display import clear_output, display
+import NELL.gui.GuiUtils as gui
 
+from IPython.display import clear_output, display
 from NELL.Readme import readme
 from NELL.ai.ai_utils import logs2robot
-from NELL.gui.gui_utils import new_cell
 from NELL.gui.MyDataFrame import MyDataFrame
 from NELL.gui.Properties import Properties
 from NELL.gui.Table import Table
 from NELL.gui.Tabs import Tabs
+
 
 class Window():
 
@@ -26,20 +27,14 @@ class Window():
         self.try_fire_data_changed_event = try_fire_data_changed_event
         self.table.data.set_change_listener(self.try_fire_data_changed_event) 
 
-        # widgewts
-        self.page_objects = new_cell(widgets.HTML(), width='900px', height='400px')
-
-        # web components
-        mapping = new_cell(self.table.content, width='350px', height='250px', scroll=True)
-        props = new_cell(self.properties.content, width='500px', height='250px', scroll=True)
-        self.web_components = new_cell(widgets.HBox([mapping, props]), hiddable=True, visible=False)
-
         # workshop
-        self.tabs = Tabs()
-        self.workshop = widgets.VBox([self.tabs.content, self.web_components])
+        mapping = gui.new_cell(self.table.content, width='350px', height='250px', scroll=True)
+        props = gui.new_cell(self.properties.content, width='500px', height='250px', scroll=True)
+        self.tabs = Tabs(mapping, props)
+        self.workshop = widgets.VBox([self.tabs.content])
 
         # for Nell
-        self.dev_n_qa = new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
+        self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
         
         # content
         self.content = widgets.HBox([self.dev_n_qa, self.workshop])
