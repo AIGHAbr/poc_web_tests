@@ -14,10 +14,14 @@ class Selenium:
     instances = {}
 
     @staticmethod
-    def get(name="main"):
+    def instance(name="main"):
         if name not in Selenium.instances:
             Selenium.instances[name] = Selenium()
         return Selenium.instances[name]
+
+    def driver(self):
+        self.driver
+
 
     def __init__(self):
         self.driver = None

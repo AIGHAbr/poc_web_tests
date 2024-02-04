@@ -3,12 +3,14 @@ import ipywidgets as widgets
 
 from IPython.display import clear_output, display
 from NELL.Readme import readme
+from NELL.Selenium import Selenium
 from NELL.ai.ai_utils import logs2robot
 from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.MyDataFrame import MyDataFrame
 from NELL.gui.Properties import Properties
 from NELL.gui.Table import Table
 from NELL.gui.Tabs import Tabs
+from NELL.logger.Logger import Logger
 
 
 class Window():
@@ -39,10 +41,72 @@ class Window():
 
         # for Nell
         self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
+
+        # buttons
+        self.start_button = gui.new_button(
+            'Star Logs', 'success', 'play'
+        )
+        
+        self.stop_button = gui.new_button(
+            'Pause Logs', 'warning', 'pause'
+        )
+                
+        self.delete_button = gui.new_button(
+            'Delete Logs', 'danger', 'trash'
+        )
+
+        self.stop_button.disabled = True   
+        self.buttons = widgets.HBox([self.start_button, self.stop_button, self.delete_button])
         
         # content
-        self.content = widgets.HBox([self.dev_n_qa, self.workshop])
+        self.content = widgets.HBox([self.dev_n_qa, widgets.VBox([                                      
+                                                        self.workshop,
+                                                        self.buttons,
+                                                        
+                                                    ]
+                                    ,layout=widgets.Layout(
+                                        width='98%',
+                                        overflow='hidden' 
+                                    ))])
+
         self.table.data_event = _window.properties.reload
+
+        self.start_button.on_click(self.start_recording)
+        self.stop_button.on_click(self.stop_recording)
+        self.delete_button.on_click(self.delete_logs)
+
+    def start_recording(self, b):
+        if self.start_button.disabled: return
+        print("start log events")
+
+        self.start_button.disabled = True
+        self.stop_button.disabled = False
+        self.tabs.content.selected_index = 1
+
+        Logger.enable()
+        Logger.log_event({'info':'start log events'}, reset=True)
+        Logger.log_event({'info':'selenium framework'})
+
+        url = self.tabs.control_center.url_input.value
+        Selenium.instance().new_driver(url)
+
+
+    def stop_recording(self, b):
+        if self.stop_button.disabled: return
+        print("stop log events")
+
+        self.stop_button.disabled = True
+        self.start_button.disabled = False
+        Logger.log_event({'info':'stop log events'})
+        Logger.disable()
+
+
+    def delete_logs(self, b):
+        self.tabs.content.selected_index = 1
+        Logger.enable()
+        Logger.log_event({'info':'clear logs'}, True)
+        if self.start_button.disabled:
+            Logger.disable()
 
 
     def redraw(self):

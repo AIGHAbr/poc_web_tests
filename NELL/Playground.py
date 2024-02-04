@@ -17,7 +17,7 @@ class Playground:
         self.pageCounter = 0
         self.current_url = None
         self.last_instrumented_url = None
-        self.selenium = Selenium.get('main')
+        self.selenium = Selenium.instance()
 
         self.init_gui()
         Logger.log_event({'info':'selenium framework'}, reset=True)
