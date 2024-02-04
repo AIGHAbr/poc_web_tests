@@ -1,10 +1,10 @@
 import time
 import ipywidgets as widgets
-import NELL.gui.GuiUtils as gui
 
 from IPython.display import clear_output, display
 from NELL.Readme import readme
 from NELL.ai.ai_utils import logs2robot
+from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.MyDataFrame import MyDataFrame
 from NELL.gui.Properties import Properties
 from NELL.gui.Table import Table
@@ -31,7 +31,11 @@ class Window():
         mapping = gui.new_cell(self.table.content, width='350px', height='250px', scroll=True)
         props = gui.new_cell(self.properties.content, width='500px', height='250px', scroll=True)
         self.tabs = Tabs(mapping, props)
-        self.workshop = widgets.VBox([self.tabs.content])
+        self.workshop = widgets.VBox([self.tabs.content]
+            ,layout=widgets.Layout(
+                width='98%',
+                overflow='hidden' 
+            ))
 
         # for Nell
         self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)

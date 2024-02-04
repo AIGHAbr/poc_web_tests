@@ -14,7 +14,7 @@ class Selenium:
     instances = {}
 
     @staticmethod
-    def get(name):
+    def get(name="main"):
         if name not in Selenium.instances:
             Selenium.instances[name] = Selenium()
         return Selenium.instances[name]
@@ -50,7 +50,7 @@ class Selenium:
             print("Error while executing the script:", e)
 
 
-    def new_driver(self, url="https://life.stg.wellzesta.com/login", restart=False):
+    def new_driver(self, url="http://www.google.com", restart=False):
         if restart:
             try: self.driver.quit()
             except: self.driver = None

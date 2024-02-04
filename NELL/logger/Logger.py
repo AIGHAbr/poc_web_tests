@@ -5,14 +5,25 @@ class Logger:
         if cls.singleton is None:
             cls.singleton = super(Logger, cls).__new__(cls)
             cls.singleton.reset_logs()
+        
+        cls.singleton.disabled=True
         return cls.singleton
 
+    @staticmethod
+    def reset_logs():
+        singleton = Logger.singleton
+        singleton.logged_events = set()
+        singleton.processedEventIds = set()
+        singleton.events = []
+        singleton.page_objects = {}
 
-    def reset_logs(self):
-        self.logged_events = set()
-        self.processedEventIds = set()
-        self.events = []
-        self.page_objects = {}
+
+    @staticmethod
+    def enable(): Logger.singleton.disabled = False
+
+
+    @staticmethod
+    def disable(): Logger.singleton.disabled = True
 
 
     @staticmethod
@@ -29,6 +40,7 @@ class Logger:
     def log_event(event, reset=False):
         if reset: Logger.singleton.reset_logs()
         if event is None: return
+        if Logger.singleton.disabled: return
 
         alias = event.get('alias', None)
         if alias is not None:
@@ -53,8 +65,9 @@ class Logger:
 
     @staticmethod
     def add_event_logger_listener(event_logger):
-        if event_logger is None:
-            return
-        Logger.singleton.log_event_listeners.append(event_logger)
-
-Logger.singleton = Logger()
+        if event_logger is None: return
+        try:
+            Logger.singleton.log_event_listeners.append(event_logger)
+        except:
+            if Logger.singleton == None: Logger.singleton = Logger()
+            Logger.singleton.log_event_listeners = [event_logger]
