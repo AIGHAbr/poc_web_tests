@@ -11,21 +11,31 @@ class LogHttpServer(socketserver.TCPServer):
 
 class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def do_OPTIONS(self):
+        # Responde a requisições OPTIONS para suportar CORS
+        self.send_response(200, "OK")
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        log_data = json.loads(post_data.decode('utf-8'))
+        try:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            log_data = json.loads(post_data.decode('utf-8'))
 
-        for entry in log_data:
-            print(f"[HTTP LOGGER] {entry}")
-            Logger.log_event(entry)
+            for entry in log_data:
+                print(f"[HTTP LOGGER] {entry}")
+                Logger.log_event(entry)
 
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
+            self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+        except BrokenPipeError as e:
+            print(f"Erro ao processar POST: {e}")
+        except Exception as e:
+            self.send_error(500, str(e))
 
 
 def start_server(port=8000):
@@ -34,5 +44,9 @@ def start_server(port=8000):
         print(f"Serving at port {port}")
         try:
             httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass
         except Exception as e:
             print(f"Server Start Error: {e}")
+        finally:
+            httpd.server_close()
