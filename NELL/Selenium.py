@@ -90,6 +90,10 @@ class Selenium:
         prefix = base.get(tag, "elem")
 
         parts = [prefix]
+
+        if element.get('id'):
+            parts.append(element['id'])
+            return self.key_builder(parts, counter)
         
         txt = element.get_text(strip=True)
         if txt:
@@ -102,10 +106,6 @@ class Selenium:
         
         if element.get('aria-label'):
             parts.append(element['aria-label'].replace(" ", "_"))
-            return self.key_builder(parts, counter)
-
-        if element.get('id'):
-            parts.append(element['id'])
             return self.key_builder(parts, counter)
         
         if element.get('data-test-id'):
@@ -129,6 +129,7 @@ class Selenium:
             if element.get(attr):
                 value = quoteattr(element[attr])
                 selectors.append(f"@{attr}={value}")
+                if attr == 'id': break
 
 
         if selectors:

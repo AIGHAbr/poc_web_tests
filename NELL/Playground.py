@@ -20,7 +20,7 @@ class Playground:
         self.selenium = Selenium.get('main')
 
         self.init_gui()
-        Logger.log_event({'event':'test_env', 'framework': 'selenium'}, reset=True)
+        Logger.log_event({'info':'selenium framework'}, reset=True)
         
         self.init_logger_server()
         self.init_browser_monitoring()
@@ -73,7 +73,7 @@ class Playground:
         try:
             self.selenium.execute_script("window.hasEventListeners=false;")
             inspect_webpage(self.selenium, self.window, self.window.table, self.window.properties)
-            Logger.log_event({'event':'browser_info', 'url': self.selenium.current_url()})
+            Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
             print(f"Instrumented: {self.selenium.current_url()}")
         
         except Exception as e:

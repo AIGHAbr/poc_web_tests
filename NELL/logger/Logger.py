@@ -40,11 +40,7 @@ class Logger:
         if sevent in Logger.singleton.logged_events: return
 
         Logger.singleton.logged_events.add(sevent)
-        Logger.singleton.events.append(sevent)
-
-        if len(Logger.singleton.log_event_listeners) == 0:
-            print(f"[CONSOLE LOGGER] {sevent}")
-            return
+        Logger.singleton.events.append(event)
 
         for listener in Logger.singleton.log_event_listeners:
             listener(event, Logger.singleton.events)

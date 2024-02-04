@@ -24,7 +24,12 @@ class Tabs():
 
 
     def log_event(self, event, events):
-        self.htmlLogs.value="<br/>\n".join(events)
+
+        evets = []
+        for evt in events:
+            evets.append(str(evt))
+
+        self.htmlLogs.value="<br/>\n".join(evets)
         print(events)
 
 

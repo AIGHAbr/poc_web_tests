@@ -1,5 +1,5 @@
 from NELL.gui.MyDataFrame import MyDataFrame
-from NELL.logger.instrument_webpage import instrument_webpage
+from NELL.logger.js_injector import instrument_webpage
 
 
 def data_changed(window=None):
