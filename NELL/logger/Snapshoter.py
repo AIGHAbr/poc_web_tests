@@ -22,14 +22,20 @@ class Snapshoter:
 
     def log_event(self, event):
 
-        self.last_url = self.current_url
-        self.current_url = self.selenium.current_url()
-        if self.last_url != self.current_url: return
-
         evType =  event.get("event", None)
         if evType == None: return
 
+        self.last_url = self.current_url
+        self.current_url = self.selenium.current_url()
+
         html = self.selenium.driver.page_source.encode("utf-8")
+        if self.last == None:
+            self.last = html
+            self.current = html
+            self.take_snapshot(html)
+            return
+
+        if self.last_url != self.current_url: return
         if self.current == html: return
 
         self.last = self.current
@@ -53,7 +59,8 @@ class Snapshoter:
         }
 
         with open("snapshot.html", 'w') as arquivo:
-            arquivo.write(html)
+            arquivo.write(str(html))
+            print("snapshot.html updated")
 
         self.logger.log_event(event)
         return (html, timestamp)   
@@ -86,8 +93,24 @@ class Snapshoter:
         for attr1, value1 in elem1.attrs.items():
             value2 = elem2.attrs.get(attr1)
             if value1 != value2:
-
                 xpath = selenium.generate_selector(elem1)
+
+                if attr1 == 'class':
+                    classes_from = set(value1 if isinstance(value1, list) else value1.split())
+                    classes_to = set(value2 if isinstance(value2, list) else value2.split())
+                    added_classes = classes_to - classes_from
+                    removed_classes = classes_from - classes_to
+
+                    diffs.append({
+                        'change': 'html class',
+                        'tagName': elem1.name,
+                        'attribute': attr1,
+                        'added': list(added_classes),
+                        'removed': list(removed_classes),
+                        'xpath': xpath
+                    })
+                    continue
+
                 diffs.append({
                     'change': 'html attribute',
                     'tagName': elem1.name,
@@ -107,7 +130,6 @@ class Snapshoter:
                     'value': value2,
                     'xpath': xpath
                 })
-
 
         for child1, child2 in zip(elem1.children, elem2.children):
             if isinstance(child1, Tag) and isinstance(child2, Tag):  

@@ -14,7 +14,7 @@ class Tabs():
         self.control_center = ControlCenter()
         self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height='400px', border='0px solid white')
         self.htmlLogs = widgets.HTML()
-        self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height='400px')
+        self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height='400px', scroll=True)
         self.tab_robot = gui.new_cell(widgets.HTML(), width='98%', height='400px', border='0px solid white')
         # self.tab_buddy = new_cell(widgets.HTML(), width='900px', height='400px')
         
