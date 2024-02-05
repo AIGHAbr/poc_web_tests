@@ -1,3 +1,4 @@
+import datetime
 from NELL.logger.Snapshoter import Snapshoter
 
 
@@ -52,6 +53,9 @@ class Logger:
         if reset: Logger.singleton.reset_logs()
         if event is None: return
         if Logger.singleton.disabled: return
+
+        if event.get('timestamp', None) is None:
+            event['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         alias = event.get('alias', None)
         if alias is not None:

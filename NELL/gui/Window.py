@@ -4,7 +4,6 @@ import ipywidgets as widgets
 from IPython.display import clear_output, display
 from NELL.Readme import readme
 from NELL.Selenium import Selenium
-from NELL.ai.ai_utils import logs2robot
 from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.MyDataFrame import MyDataFrame
 from NELL.gui.Properties import Properties
@@ -118,18 +117,3 @@ class Window():
         self.table.reload(df)
         self.table.data.set_change_listener(self.try_fire_data_changed_event)
         self.try_fire_data_changed_event()
-
-
-    def on_tab_change(self, change):
-        if change['new'] == 1: 
-            current_logs = "<br/>\n".join(self.tab_event_logs.children[0].value)
-            if current_logs != self.last_log_sent: 
-                self.last_log_sent = current_logs
-                robot_script = logs2robot(current_logs)
-                self.tab_robot.children = [widgets.Textarea(
-                                                value=robot_script, 
-                                                layout=widgets.Layout(
-                                                width='100%', 
-                                                height='100%',
-                                                border='1px solid white'
-                                            ))] 

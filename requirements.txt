@@ -5,4 +5,4 @@ pandas
 ipywidgets
 openai
 langchain
-voila
+langchain-openai
