@@ -1,13 +1,18 @@
+from NELL.logger.Snapshoter import Snapshoter
+
+
 class Logger:
 
-    singleton = None 
+    singleton = None
     def __new__(cls, *args, **kwargs):
         if cls.singleton is None:
             cls.singleton = super(Logger, cls).__new__(cls)
             cls.singleton.reset_logs()
-        
+            cls.singleton.log_event_listeners =[]
+            
         cls.singleton.disabled=True
         return cls.singleton
+
 
     @staticmethod
     def reset_logs():
@@ -19,11 +24,17 @@ class Logger:
 
 
     @staticmethod
-    def enable(): Logger.singleton.disabled = False
+    def enable(): 
+        if Logger.singleton == None:
+            Logger.singleton = Logger()
+        Logger.singleton.disabled = False
 
 
     @staticmethod
-    def disable(): Logger.singleton.disabled = True
+    def disable(): 
+        if Logger.singleton == None:
+            Logger.singleton = Logger()
+        Logger.singleton.disabled = True
 
 
     @staticmethod

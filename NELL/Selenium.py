@@ -3,7 +3,6 @@ import time
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from xml.sax.saxutils import quoteattr
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options

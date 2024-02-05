@@ -12,7 +12,6 @@ class LogHttpServer(socketserver.TCPServer):
 class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_OPTIONS(self):
-        # Responde a requisições OPTIONS para suportar CORS
         self.send_response(200, "OK")
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -26,7 +25,6 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
             log_data = json.loads(post_data.decode('utf-8'))
 
             for entry in log_data:
-                print(f"[HTTP LOGGER] {entry}")
                 Logger.log_event(entry)
 
             self.send_response(200)

@@ -50,7 +50,7 @@ class Window():
         self.stop_button = gui.new_button(
             'Pause Logs', 'warning', 'pause'
         )
-                
+
         self.delete_button = gui.new_button(
             'Delete Logs', 'danger', 'trash'
         )
