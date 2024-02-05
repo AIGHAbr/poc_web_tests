@@ -1,6 +1,6 @@
 import time
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from collections import defaultdict
 from xml.sax.saxutils import quoteattr
 from selenium import webdriver
@@ -129,18 +129,16 @@ class Selenium:
         selectors = []
 
         for attr in ['id', 'name', 'placeholder', 'aria-label', 'data-test-id', 'alt']:
-            if element.get(attr):
-                value = quoteattr(element[attr])
-                selectors.append(f"@{attr}={value}")
-                if attr == 'id': break
+            v = element.get(attr, None)
+            if v == None: continue
+            selectors.append(f"@{attr}={quoteattr(v)}")
+            if attr == 'id': break
 
-
-        if selectors:
+        if len(selectors)>0:
             xpath_selector = f"//{element.name}[{' and '.join(selectors)}]"
             elements_found = self.driver.find_elements("xpath", xpath_selector)
             if len(elements_found) == 1:
                 return xpath_selector
-
 
         txt = element.get_text(strip=True)
         if txt:
@@ -149,7 +147,6 @@ class Selenium:
             if len(elements_found) == 1:
                 return xpath_selector
 
-
         if element.get('class'):
             classes = '.'.join(element.get('class'))
             xpath_selector = f"//{element.name}[contains(@class, {quoteattr(classes)})]"
@@ -157,7 +154,32 @@ class Selenium:
             if len(elements_found) == 1:
                 return xpath_selector
 
-        return None
+        return self.bs4_xpath(element)
+
+
+    def bs4_xpath(self, element):
+        components = []
+        child = element if element.name else element.parent
+        while child is not None:
+            if child.name is None: break
+        
+            if 'id' in child.attrs:
+                components.append(f"[@id='{child.attrs['id']}']")
+                break
+
+            siblings = [sib for sib in child.parent.find_all(child.name, recursive=False) if sib is not None]
+            if len(siblings) > 1:
+                index = siblings.index(child) + 1
+                components.append(f"{child.name}[{index}]")
+                child = child.parent
+                continue
+
+            components.append(child.name)
+            child = child.parent
+
+        components.reverse()
+        return '/'.join(components)
+    
 
 
     # read page objects

@@ -1,4 +1,5 @@
 import datetime
+import re
 from bs4 import BeautifulSoup, Tag
 from NELL.Selenium import Selenium
 
@@ -58,8 +59,8 @@ class Snapshoter:
             'timestamp': timestamp
         }
 
-        with open("snapshot.html", 'w') as arquivo:
-            arquivo.write(str(html))
+        with open("snapshot.html", 'w') as arquivo:  
+            arquivo.write(re.sub(r">(?!$)", ">\n", str(html)))
             print("snapshot.html updated")
 
         self.logger.log_event(event)

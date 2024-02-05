@@ -77,7 +77,6 @@ class Window():
 
     def start_recording(self, b):
         if self.start_button.disabled: return
-        print("start log events")
 
         self.start_button.disabled = True
         self.stop_button.disabled = False
@@ -93,7 +92,6 @@ class Window():
 
     def stop_recording(self, b):
         if self.stop_button.disabled: return
-        print("stop log events")
 
         self.stop_button.disabled = True
         self.start_button.disabled = False

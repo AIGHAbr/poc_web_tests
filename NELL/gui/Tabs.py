@@ -38,8 +38,10 @@ class Tabs():
     def log_event(self, event, events):
 
         evets = []
-        for evt in events:
-            evets.append(str(evt))
+        size = len(events)
+        for i, evt in enumerate(reversed(events), start=1):
+            j = size - i
+            evets.append(f"{j}. {str(evt)}")
 
         self.htmlLogs.value="<br/>\n".join(evets)
         print(events)
