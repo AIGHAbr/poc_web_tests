@@ -1,29 +1,19 @@
-
 import os
-import httpx
-import NELL.ai.prompts as prompts
-
-api_key = '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'
-os.environ["OPENAI_API_KEY"]=api_key
+import NELL.ai.roles as roles
+import NELL.ai.logs_sample as logs
+from openai import OpenAI
 
 def generate_robot(logs):
-    api_key = 'sua_chave_de_api'
-    os.environ["OPENAI_API_KEY"] = api_key
-    
-    headers = {
-        "Authorization": f"Bearer {api_key}"
-    }
-    
-    data = {
-        "model": "gpt-4-0125-preview",  # Substitua pelo modelo de chat correto, se necessário
-        "messages": [{"role": "system", "content": "Seu prompt inicial aqui"}, {"role": "user", "content": logs}]
-    }
-    
-    response = httpx.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers)
-    
-    if response.status_code == 200:
-        result = response.json()
-        return result
 
-    raise Exception("Falha na requisição da API", response.text)
+    api_key = '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'
+    os.environ["OPENAI_API_KEY"]=api_key
 
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-4-turbo-preview",
+    messages=[
+        {"role": "system", "content": roles.dev_robot},
+        {"role": "user", "content": f"utilize esses logs e crie o script do robot{logs}"}
+    ])
+    return completion.choices[0].message.content

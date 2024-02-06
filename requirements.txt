@@ -3,6 +3,4 @@ webdriver_manager
 beautifulsoup4
 pandas
 ipywidgets
-openai
-langchain
-langchain-openai
+openai==1.0.0

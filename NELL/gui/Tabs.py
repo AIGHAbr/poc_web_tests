@@ -1,6 +1,5 @@
 import ipywidgets as widgets
 from NELL.ai.ai_utils import generate_robot
-
 from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.ControlCenter import ControlCenter
 from NELL.logger.LogHttpServer import Logger
@@ -8,27 +7,33 @@ from NELL.logger.LogHttpServer import Logger
 class Tabs():
     
     def __init__(self, mapping, props):
+        height = '600px'
         self.content = widgets.Tab()
-        self.tab_tests = gui.new_cell(widgets.HBox([mapping, props]), width='98%', height='400px')
+        self.tab_tests = gui.new_cell(widgets.HBox([mapping, props]), width='98%', height=height)
         self.control_center = ControlCenter()
-        self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height='400px', border='0px solid white')
+        self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height=height, border='0px solid white')
         self.htmlLogs = widgets.HTML()
-        self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height='400px', scroll=True)
+        self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
         
-        # Inicializa tab_robot como Textarea
-        self.tab_robot = widgets.Textarea(
+
+        self.txt_robot = widgets.Textarea(
             layout=widgets.Layout(
                 width='100%', 
-                height='400px',  # Define a altura para preencher a aba
-                overflow='auto'  # Habilita o scroll
+                height=height,  
+                overflow='auto'
             )
         )
+
+        self.btn_robot = widgets.Button(description='AI', button_style='info')
+        self.tab_robot = widgets.HBox([self.btn_robot, self.txt_robot])
+        self.btn_robot.on_click(lambda _: self.on_click_ai())
         
+
         self.content.children = [
             self.tabs_control,
             self.tab_event_logs, 
             self.tab_tests, 
-            self.tab_robot  # Atualiza esta linha para incluir o Textarea diretamente
+            self.tab_robot 
         ]
         
         self.content.set_title(0, 'Test Control Center')
@@ -55,10 +60,13 @@ class Tabs():
         print(events)
 
 
-    def on_tab_change(self, change):
-        if self.content.selected_index == 3:  # Checa se a aba do Robot Framework foi selecionada
-            current_logs = self.htmlLogs.value
-            if current_logs != self.last_log_sent:
-                self.last_log_sent = current_logs
-                robot_script = generate_robot(current_logs)
-                self.tab_robot.value = robot_script  # Atualiza o valor do Textarea
+    def on_click_ai(self):
+        current_logs = self.htmlLogs.value
+
+        try: 
+            if current_logs == self.last_log_sent: return
+        except:
+            self.last_log_sent = current_logs
+
+        robot_script = generate_robot(current_logs)
+        self.txt_robot.value = robot_script
