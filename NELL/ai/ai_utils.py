@@ -14,6 +14,6 @@ def generate_robot(logs):
     model="gpt-4-turbo-preview",
     messages=[
         {"role": "system", "content": roles.dev_robot},
-        {"role": "user", "content": f"utilize esses logs e crie o script do robot{logs}"}
+        {"role": "user", "content": f"utilize esses logs abaixo e retorne somente os scripts, nada mais. \nlogs:\n{logs}"}
     ])
     return completion.choices[0].message.content

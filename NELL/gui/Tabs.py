@@ -1,4 +1,7 @@
+import asyncio
+import threading
 import ipywidgets as widgets
+
 from NELL.ai.ai_utils import generate_robot
 from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.ControlCenter import ControlCenter
@@ -18,14 +21,14 @@ class Tabs():
 
         self.txt_robot = widgets.Textarea(
             layout=widgets.Layout(
-                width='100%', 
+                width='99%', 
                 height=height,  
                 overflow='auto'
             )
         )
 
-        self.btn_robot = widgets.Button(description='AI', button_style='info')
-        self.tab_robot = widgets.HBox([self.btn_robot, self.txt_robot])
+        self.btn_robot = widgets.Button(description='Run AI', button_style='info')
+        self.tab_robot = widgets.VBox([self.btn_robot, self.txt_robot])
         self.btn_robot.on_click(lambda _: self.on_click_ai())
         
 
@@ -46,10 +49,11 @@ class Tabs():
         Logger.add_event_logger_listener(
             lambda event, events: self.log_event(event, events))
         
-        self.content.observe(self.on_tab_change, 'selected_index')
+        self.tab_robot.disabled = True
 
 
     def log_event(self, event, events):
+
         event_list = []
         size = len(events)
         for i, evt in enumerate(reversed(events), start=1):
@@ -61,12 +65,48 @@ class Tabs():
 
 
     def on_click_ai(self):
-        current_logs = self.htmlLogs.value
+        if len(Logger.all_events())<3:
+            self.txt_robot.value = "Not enough logs to generate scripts!\n" + self.txt_robot.value
+            return
 
+        current_logs = self.htmlLogs.value
         try: 
             if current_logs == self.last_log_sent: return
-        except:
+        except AttributeError:
             self.last_log_sent = current_logs
 
-        robot_script = generate_robot(current_logs)
-        self.txt_robot.value = robot_script
+        self.start_running_feedback()
+        threading.Thread(target=self.generate_scripts, args=(current_logs,), daemon=True).start()
+
+
+    def generate_scripts(self, logs):
+        robot_script = generate_robot(logs)
+        def update_ui():
+            self.txt_robot.value = robot_script
+            self.stop_running_feedback()
+        asyncio.run_coroutine_threadsafe(update_ui(), asyncio.get_event_loop())
+
+
+    async def animate_button(self, interval=0.5):
+        animations = ['Running', 'Running.', 'Running..', 'Running...']
+        while self.btn_robot.disabled: 
+            for anim in animations:
+                if not self.btn_robot.disabled: break
+                self.btn_robot.description = anim
+                await asyncio.sleep(interval)
+        self.btn_robot.description = 'Run AI'
+
+
+    def start_running_feedback(self):
+        self.txt_robot.disabled = True
+        self.btn_robot.disabled = True
+        self.btn_robot.button_style = 'warning'
+        asyncio.create_task(self.animate_button(0.5))
+
+
+    def stop_running_feedback(self):
+        def update_button():
+            self.txt_robot.disabled = False
+            self.btn_robot.disabled = False
+            self.btn_robot.button_style = 'info'
+        asyncio.run_coroutine_threadsafe(update_button(), asyncio.get_event_loop())
