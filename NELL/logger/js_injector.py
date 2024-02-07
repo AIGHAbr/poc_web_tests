@@ -1,4 +1,4 @@
-to_inject_js = """
+js = """
 (function() {
     if (window.myAppInstrumented) return;
     window.myAppInstrumented = true;
@@ -67,7 +67,3 @@ to_inject_js = """
     observer.observe(document.body, { childList: true, subtree: true });
 })();
 """
-
-def instrument_webpage(selenium):
-    print("Instrumenting Webpage...")
-    selenium.execute_script(to_inject_js)

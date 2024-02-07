@@ -1,5 +1,6 @@
 import re
 import time
+import traceback
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from xml.sax.saxutils import quoteattr
@@ -8,6 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from NELL.gui.MyDataFrame import MyDataFrame
+import NELL.logger.js_injector as injector
 
 class Selenium:
 
@@ -52,6 +54,7 @@ class Selenium:
             return self.driver.execute_script(script)
         except Exception as e: 
             print("Error while executing the script:", e)
+            traceback.print_exc()
 
 
     def new_driver(self, url="http://www.google.com", restart=False):
@@ -256,3 +259,4 @@ class Selenium:
 
 
         window.reload(MyDataFrame(rows))
+        self.execute_script(injector.js)

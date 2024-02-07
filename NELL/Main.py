@@ -22,7 +22,7 @@ class Main:
         Logger.log_event({'info':'selenium framework'}, reset=True)
         
         self.init_logger_server()
-        # self.init_browser_monitoring()
+        self.init_browser_monitoring()
       
 
     def init_gui(self):
