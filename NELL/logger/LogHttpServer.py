@@ -25,6 +25,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
             log_data = json.loads(post_data.decode('utf-8'))
 
             for entry in log_data:
+                print(entry)
                 Logger.log_event(entry)
 
             self.send_response(200)

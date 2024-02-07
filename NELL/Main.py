@@ -45,6 +45,10 @@ class Main:
 
     def check_browser(self):
         while True:
+            if Logger.disabled:
+                time.sleep(0.5)
+                continue
+
             try:
                 if not self.selenium.is_page_loaded():
                     time.sleep(0.1)

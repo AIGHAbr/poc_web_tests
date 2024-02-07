@@ -23,6 +23,13 @@ class Logger:
 
 
     @staticmethod
+    def disabled(): 
+        if Logger.singleton == None:
+            Logger.singleton = Logger()
+        return Logger.singleton.disabled
+
+
+    @staticmethod
     def enable(): 
         if Logger.singleton == None:
             Logger.singleton = Logger()
