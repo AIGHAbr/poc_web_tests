@@ -1,4 +1,3 @@
-import re
 import time
 import traceback
 from bs4 import BeautifulSoup
@@ -128,7 +127,6 @@ class Selenium:
         return key if counter[key] == 1 else f"{key}_{counter[key]}"
 
 
-    # Generate Selectors
     def generate_selector(self, element):
         selectors = []
 
@@ -188,8 +186,6 @@ class Selenium:
         return "//*"+'/'.join(components)
     
 
-
-    # read page objects
     def read_page_objects_metadata(self):
 
         html = self.driver.page_source.encode("utf-8")

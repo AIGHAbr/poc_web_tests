@@ -1,6 +1,5 @@
 import os
 import NELL.ai.roles as roles
-import NELL.ai.logs_sample as logs
 from openai import OpenAI
 
 def generate_robot(logs):

@@ -1,12 +1,9 @@
-
 import time
 import threading
 import traceback
 
-from IPython.display import clear_output
 from NELL.Selenium import Selenium
 from NELL.gui.Window import Window
-
 from NELL.logger.Logger import Logger
 from NELL.logger.LogHttpServer import start_server
 
