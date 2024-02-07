@@ -11,7 +11,9 @@ from NELL.gui.QualityAssurance import QualityAssurance
 class Tabs():
     
     def __init__(self):
+
         height = '600px'
+        self.animating = False
         self.content = widgets.Tab()
         self.tab_qa = QualityAssurance()
         self.control_center = ControlCenter()
@@ -66,6 +68,11 @@ class Tabs():
 
 
     def on_click_ai(self):
+
+        if self.animating:
+            self.txt_robot.value = "I'm working, relax Man!\n" + self.txt_robot.value
+            return
+
         if len(Logger.all_events())<3:
             self.txt_robot.value = "Not enough logs to generate scripts!\n" + self.txt_robot.value
             return
@@ -97,26 +104,34 @@ class Tabs():
 
 
     async def animate_button(self, interval=0.5):
+        self.animating = True
         animations = ['Running', '.Running.', '..Running..', '...Running...', 
                       '....Running....', '...Running...', '..Running..', '.Running.']
-        while self.btn_robot.disabled: 
+        while self.animating: 
             for anim in animations:
-                if not self.btn_robot.disabled: break
+                if not self.animating: break
                 self.btn_robot.description = anim
                 await asyncio.sleep(interval)
-        self.btn_robot.description = 'Run AI'
 
+        self.btn_robot.description = 'Run AI'
+        self.btn_robot.disabled = False
+        self.txt_robot.disabled = False
+        
 
     def start_running_feedback(self):
         self.txt_robot.disabled = True
         self.btn_robot.disabled = True
-        self.btn_robot.button_style = 'warning'
         asyncio.create_task(self.animate_button(0.2))
 
 
     def stop_running_feedback(self):
-        def update_button():
-            self.txt_robot.disabled = False
-            self.btn_robot.disabled = False
-            self.btn_robot.button_style = 'info'
-        asyncio.run_coroutine_threadsafe(update_button(), asyncio.get_event_loop())
+        self.animating = False
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.run_coroutine_threadsafe(self.update_button(), loop)
+            return
+
+
+    async def update_button(self):
+        self.txt_robot.disabled = False
+        self.btn_robot.disabled = False
