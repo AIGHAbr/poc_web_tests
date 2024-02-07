@@ -56,7 +56,7 @@ class Selenium:
             traceback.print_exc()
 
 
-    def new_driver(self, url="http://www.google.com", restart=False):
+    def new_driver(self, url="https://www.youtube.com/watch?v=6Iti5-Zfpg4", restart=False):
         if restart:
             try: self.driver.quit()
             except: self.driver = None

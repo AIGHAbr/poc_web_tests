@@ -45,12 +45,12 @@ class Window():
         self.stop_button.disabled = False
         self.tabs.content.selected_index = 1
 
+        url = self.tabs.control_center.url_input.value
+        Selenium.instance().new_driver(url)
+        
         Logger.enable()
         Logger.log_event({'info':'start log events'}, reset=True)
         Logger.log_event({'info':'selenium framework'})
-
-        url = self.tabs.control_center.url_input.value
-        Selenium.instance().new_driver(url)
 
 
     def stop_recording(self, b):
@@ -71,9 +71,7 @@ class Window():
 
 
     def redraw(self):
-        # clear_output()
         display(self.content, display_id="Playground")
-        # time.sleep(3)
 
 
     def reload(self, df=None):
