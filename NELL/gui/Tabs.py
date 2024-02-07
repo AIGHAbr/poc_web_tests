@@ -100,23 +100,21 @@ class Tabs():
 
     def generate_scripts(self, logs):
         robot_script = generate_robot(logs)
-        tmp = robot_script
-        tmp = tmp.replace('<inicio keyword.resouce>', '')
-        tmp = tmp.replace('<inicio testsuit.robot>', '')
-        tmp = tmp.replace('<fim testsuit.robot>', '')
-        scripts = robot_script.split('<fim keyword.resouce>\n')
-
         def update_ui():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
             async def async_update_ui():
                 try:
-                    self.txt_robot01.value = '*** Keywords.Resources ***\n' + scripts[0].lstrip()
-                    self.txt_robot01.value = '*** TestSuit.Robot ***\n' + scripts[1].lstrip()
+                    scripts = robot_script.split('<inicio testsuit.robot>')
+                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>", "")
+                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'", "")
+                    
+                    self.txt_robot01.value = '*** Keywords.Resources ***\n\n' + script1.lstrip()
+                    self.txt_robot02.value = '*** TestSuit.Robot ***\n\n' + script2.lstrip()
                     
                 except:
-                    self.txt_robot01.value = tmp
+                    self.txt_robot01.value = robot_script
                     self.txt_robot02.value = ''
 
                 self.stop_running_feedback()
