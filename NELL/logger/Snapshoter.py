@@ -58,10 +58,6 @@ class Snapshoter:
             'timestamp': timestamp
         }
 
-        # with open("snapshot.html", 'w') as arquivo:  
-        #     arquivo.write(re.sub(r">(?!$)", ">\n", str(html)))
-        #     print("snapshot.html updated")
-
         self.logger.log_event(event)
         return (html, timestamp)   
 
@@ -80,16 +76,6 @@ class Snapshoter:
 
         if elem1.name != elem2.name: 
             return diffs
-            # xpath1 = selenium.generate_selector(elem1)
-            # xpath2 = selenium.generate_selector(elem2)
-            # diffs.append({
-            #     'change': 'html tag',
-            #     'xpath1': xpath1,
-            #     'tag1': elem1.name,
-            #     'xpath2': xpath2,
-            #     'tag2': elem2.name
-            # })
-            # return diffs
 
         for attr1, value1 in elem1.attrs.items():
             value2 = elem2.attrs.get(attr1)

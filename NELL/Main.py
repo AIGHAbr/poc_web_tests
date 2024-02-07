@@ -65,8 +65,8 @@ class Main:
                 self.selenium.instrument_webpage(self.window)  
 
             except Exception as e:
+                traceback.print_exc()
                 print(f"Exception: {e}")
                 self.selenium.new_driver(restart=True)
-                traceback.print_exc()
 
             time.sleep(0.5)

@@ -33,7 +33,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
 
         except BrokenPipeError as e:
             traceback.print_exc()
-            print(f"Erro ao processar POST: {e}")
+            print(f"POST ERROR: {e}")
 
         except Exception as e:
             traceback.print_exc()

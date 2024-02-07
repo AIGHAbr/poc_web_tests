@@ -9,7 +9,9 @@ Siga as seguintes diretivas:
 * Caminho Feliz: Desenvolva scripts que cubram o fluxo principal de uso validando os cenários de sucesso.
 * Tratamento de Erros: Elabore testes que verifiquem como a aplicação lida com erros. 
 * Dados Inválidos: Note que dados mal-formatados, normalmente nos 'sendkeys' seguidos por 'change', podem ser fornecidos e que podem provocam aletarções nos CSS e em outros atributos. Utilize esses casos para criar verificações que possam detectar essas situações inadequadas.
-* Separe o script em dois pedaços: keyword.resouce e testsuit.robot
+* Armazene em váriaveis com nomes sugestivos os valores digitados pelo usuário.
+* Preste atenção na digitação de teclas especiais, como 'ENTER' e 'TAB'.
+* Separe o script em dois pedaços, keyword.resouce e testsuit.robot, e coloque um separador com 3 caracteres '=' entre eles.
 
 
 Use esses exemplos para entender como devem ser os script:

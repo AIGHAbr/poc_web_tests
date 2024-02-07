@@ -99,7 +99,19 @@ class Tabs():
 
 
     def generate_scripts(self, logs):
-        robot_script = generate_robot(logs)
+        robot_script = None
+        try:
+            robot_script = generate_robot(logs)
+            print(robot_script)
+
+        except Exception as ex:
+            self.txt_robot01.value = ex.error
+            self.txt_robot02.value = ""
+            self.animating = False
+            self.txt_robot.disabled = False
+            self.btn_robot.disabled = False
+            return
+
         def update_ui():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -107,8 +119,11 @@ class Tabs():
             async def async_update_ui():
                 try:
                     scripts = robot_script.split('<inicio testsuit.robot>')
-                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>", "")
-                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'", "")
+                    if len(scripts) == 1 or len(scripts) >2:
+                        scripts = robot_script.split('===')
+
+                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>", "").replace("===", "")
+                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'", "").replace("===", "")
                     
                     self.txt_robot01.value = '*** Keywords.Resources ***\n\n' + script1.lstrip()
                     self.txt_robot02.value = '*** TestSuit.Robot ***\n\n' + script2.lstrip()

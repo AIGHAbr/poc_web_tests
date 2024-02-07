@@ -1,6 +1,6 @@
 import ipywidgets as widgets
 
-from IPython.display import display
+from IPython.display import display, clear_output
 from NELL.Readme import readme
 from NELL.Selenium import Selenium
 from NELL.logger.Logger import Logger
@@ -71,6 +71,7 @@ class Window():
 
 
     def redraw(self):
+        clear_output()
         display(self.content, display_id="Playground")
 
 

@@ -87,10 +87,11 @@ class Selenium:
         try:
             self.driver.execute_script(script)
         except Exception as e:
+            traceback.print_exc()
             print("Error while highlighting the element:", e)
 
 
-    # generate keys
+
     def generate_key(self, tag, element, counter):
         base = {"input": "txt", "button": "btn", "a": "lnk", "img": "img"}
         prefix = base.get(tag, "elem")
