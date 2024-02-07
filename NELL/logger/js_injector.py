@@ -30,7 +30,7 @@ js = """
             let element = event.target;
             let tagName = element.tagName.toLowerCase();
             let detail = tagName === 'button' ? 'text: ' + element.innerText : 'value: ' + element.value;
-            sendLogToServer({event: 'click', tagName: tagName, alias: element.getAttribute('key')});
+            sendLogToServer({event: 'click', tagName: tagName, widget_id: element.getAttribute('key')});
         });
 
         document.addEventListener('keydown', function(event) {
@@ -41,7 +41,7 @@ js = """
                 sendLogToServer({
                     event: 'sendkeys', 
                     tagName: tagName, 
-                    alias: element.getAttribute('key'), 
+                    widgwt_id: element.getAttribute('key'), 
                     text: element.value,
                     specialKey: event.key
                 });

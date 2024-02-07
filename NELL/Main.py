@@ -59,10 +59,10 @@ class Main:
                     time.sleep(0.1)
                     continue
 
-                Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
+                event = Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
                 self.current_url = self.selenium.current_url()
                 self.selenium.execute_script("window.hasEventListeners=false;")
-                self.selenium.instrument_webpage(self.window)  
+                self.selenium.instrument_webpage(self.window, event['page_id'])  
 
             except Exception as e:
                 traceback.print_exc()

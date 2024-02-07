@@ -40,6 +40,7 @@ class QualityAssurance:
 
     def reload(self, df=None, element=None, attributes={}):
 
+        print("Reloading Quality Assurance *************************************")
         if df is not None: self.data = df
         df = self.data
         lines = len(self.data) + 1
@@ -58,6 +59,7 @@ class QualityAssurance:
 
             Logger.add_page_object(cell_value_alias, cell_value_web)
 
+        print(grid)
         self.page_objects.children = [grid]
 
 

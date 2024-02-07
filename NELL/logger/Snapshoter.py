@@ -53,8 +53,8 @@ class Snapshoter:
         self.next_id += 1
    
         event = {
-            'info': 'html src snapshot',
-            'id': snapshot_id,
+            'info': 'page src snapshot',
+            'id': f"snapshot_{snapshot_id}",
             'timestamp': timestamp
         }
 

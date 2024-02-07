@@ -216,7 +216,7 @@ class Selenium:
         return self.driver.current_url
     
 
-    def instrument_webpage(self, window):
+    def instrument_webpage(self, window, page_id=""):
 
         global selectors
         metadata = self.read_page_objects_metadata()
@@ -238,7 +238,7 @@ class Selenium:
                        
                 rows.append({
                     "Export": False,
-                    "Alias": key,
+                    "Alias": page_id + "@" + key,
                     "key": key,
                     "Web": selector,
                     "Type": tag_name,
@@ -248,7 +248,7 @@ class Selenium:
                 selector = selector.replace('"', "'")  
                 js = f"""
                         var e01 = document.evaluate("{selector}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                        if (e01) e01.setAttribute('key','{key}');
+                        if (e01) e01.setAttribute('key','{page_id}@{key}');
                 """ 
 
                 self.execute_script(js)

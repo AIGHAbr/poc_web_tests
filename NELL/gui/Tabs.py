@@ -51,7 +51,7 @@ class Tabs():
             self.tab_robot 
         ]
         
-        self.content.set_title(0, 'Test Control Center')
+        self.content.set_title(0, 'Configuration')
         self.content.set_title(1, 'Event Journal')
         self.content.set_title(2, 'Quality Assurance')
         self.content.set_title(3, 'Robot Framework')
