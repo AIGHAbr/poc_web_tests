@@ -38,7 +38,7 @@ class Window():
                                      layout=widgets.Layout(width='98%',overflow='hidden'))])
 
 
-    def start_recording(self, b):
+    def start_recording(self, b=None):
         if self.start_button.disabled: return
 
         self.start_button.disabled = True

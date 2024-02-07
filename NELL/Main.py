@@ -22,7 +22,7 @@ class Main:
         Logger.log_event({'info':'selenium framework'}, reset=True)
         
         self.init_logger_server()
-        self.init_browser_monitoring()
+        # self.init_browser_monitoring()
       
 
     def init_gui(self):
@@ -45,7 +45,7 @@ class Main:
 
     def check_browser(self):
         while True:
-            if Logger.disabled:
+            if Logger.disabled():
                 time.sleep(0.5)
                 continue
 
