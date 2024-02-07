@@ -1,5 +1,4 @@
 import datetime
-import re
 from bs4 import BeautifulSoup, Tag
 from NELL.Selenium import Selenium
 

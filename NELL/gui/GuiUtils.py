@@ -1,5 +1,4 @@
 import ipywidgets as widgets
-
 from NELL.gui.WidgetController import WidgetController
 
 class GuiUtils():
@@ -8,12 +7,15 @@ class GuiUtils():
     def new_cell(content, width='100%', height='100%', scroll=False, 
                 border='5px solid white', hiddable=False, visible=True):
         
-        cell_box = widgets.Box([content], layout=widgets.Layout(
-            border=border,
-            width=width,
-            height=height,
-            overflow='auto' if scroll else 'hidden'
-        )) 
+        cell_box = widgets.Box([content], 
+            layout=widgets.Layout(
+                border=border,
+                overflow='auto' if scroll else 'hidden'
+            )) 
+
+        if width != None: cell_box.layout.width = width
+        if height != None: cell_box.layout.height = height
+
         if not hiddable: return cell_box
         
         btnShowHide = widgets.Button(description='x')
@@ -39,6 +41,7 @@ class GuiUtils():
 
         return result
     
+
     @staticmethod
     def new_textfield(description, value=None, 
                         width='100%', height='30px', border='5px solid white'):
@@ -53,20 +56,22 @@ class GuiUtils():
             )
         )
 
+
     @staticmethod
     def new_textarea(description, value=None,
                             width='100%', height='100px', border='5px solid white'):
-        return widgets.Textarea(
+        txt = widgets.Textarea(
             value=value,
             description=description,
             style={'description_width': 'initial'},
             layout=widgets.Layout(
-                width=width,
-                height=height,
                 border=border
             )
         )
+        if width != None: txt.layout.width = width
+        if height != None: txt.layout.height = height
     
+
     @staticmethod
     def new_divider(width='100%', border='5px solid white'):
         
@@ -77,6 +82,7 @@ class GuiUtils():
                 border=border
             )
         )
+
 
     @staticmethod
     def new_button(description, button_style, icon):

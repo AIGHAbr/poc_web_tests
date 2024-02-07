@@ -5,7 +5,7 @@ from openai import OpenAI
 
 def generate_robot(logs):
 
-    api_key = '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'
+    api_key = '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'
     os.environ["OPENAI_API_KEY"]=api_key
 
     client = OpenAI()

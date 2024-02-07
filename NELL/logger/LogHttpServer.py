@@ -1,5 +1,5 @@
-import http.server
 import json
+import http.server
 import socketserver
 
 from NELL.logger.Logger import Logger

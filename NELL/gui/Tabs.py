@@ -3,16 +3,17 @@ import threading
 import ipywidgets as widgets
 
 from NELL.ai.ai_utils import generate_robot
+from NELL.logger.LogHttpServer import Logger
 from NELL.gui.GuiUtils import GuiUtils as gui
 from NELL.gui.ControlCenter import ControlCenter
-from NELL.logger.LogHttpServer import Logger
+from NELL.gui.QualityAssurance import QualityAssurance
 
 class Tabs():
     
-    def __init__(self, mapping, props):
+    def __init__(self):
         height = '600px'
         self.content = widgets.Tab()
-        self.tab_tests = gui.new_cell(widgets.HBox([mapping, props]), width='98%', height=height)
+        self.tab_qa = QualityAssurance()
         self.control_center = ControlCenter()
         self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height=height, border='0px solid white')
         self.htmlLogs = widgets.HTML()
@@ -22,7 +23,7 @@ class Tabs():
         self.txt_robot = widgets.Textarea(
             layout=widgets.Layout(
                 width='99%', 
-                height=height,  
+                height='564px',  
                 overflow='auto'
             )
         )
@@ -35,7 +36,7 @@ class Tabs():
         self.content.children = [
             self.tabs_control,
             self.tab_event_logs, 
-            self.tab_tests, 
+            gui.new_cell(self.tab_qa.content, width='98%', height=height, border='0px solid white'), 
             self.tab_robot 
         ]
         
@@ -82,13 +83,22 @@ class Tabs():
     def generate_scripts(self, logs):
         robot_script = generate_robot(logs)
         def update_ui():
-            self.txt_robot.value = robot_script
-            self.stop_running_feedback()
-        asyncio.run_coroutine_threadsafe(update_ui(), asyncio.get_event_loop())
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            async def async_update_ui():
+                self.txt_robot.value = robot_script
+                self.stop_running_feedback()
+
+            loop.run_until_complete(async_update_ui())
+            loop.close()
+
+        update_ui()
 
 
     async def animate_button(self, interval=0.5):
-        animations = ['Running', 'Running.', 'Running..', 'Running...']
+        animations = ['Running', '.Running.', '..Running..', '...Running...', 
+                      '....Running....', '...Running...', '..Running..', '.Running.']
         while self.btn_robot.disabled: 
             for anim in animations:
                 if not self.btn_robot.disabled: break
@@ -101,7 +111,7 @@ class Tabs():
         self.txt_robot.disabled = True
         self.btn_robot.disabled = True
         self.btn_robot.button_style = 'warning'
-        asyncio.create_task(self.animate_button(0.5))
+        asyncio.create_task(self.animate_button(0.2))
 
 
     def stop_running_feedback(self):

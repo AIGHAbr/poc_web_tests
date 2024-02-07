@@ -5,13 +5,12 @@ import traceback
 
 from IPython.display import clear_output
 from NELL.Selenium import Selenium
-from NELL.gui.gui_events import data_changed, inspect_webpage
 from NELL.gui.Window import Window
 
 from NELL.logger.Logger import Logger
 from NELL.logger.LogHttpServer import start_server
 
-class Playground:
+class Main:
 
     def __init__(self):
         self.pageCounter = 0
@@ -28,7 +27,7 @@ class Playground:
 
     def init_gui(self):
         self.selenium.new_driver(restart=True)
-        self.window = Window(data_changed)
+        self.window = Window()
         self.window.redraw()
 
 
@@ -59,8 +58,10 @@ class Playground:
                     time.sleep(0.1)
                     continue
 
+                Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
                 self.current_url = self.selenium.current_url()
-                self.instrument_browser()
+                self.selenium.execute_script("window.hasEventListeners=false;")
+                self.selenium.instrument_webpage(self.window)  
 
             except Exception as e:
                 print(f"Exception: {e}")
@@ -68,18 +69,3 @@ class Playground:
                 traceback.print_exc()
 
             time.sleep(0.5)
-
-    def instrument_browser(self):
-        try:
-            self.selenium.execute_script("window.hasEventListeners=false;")
-            inspect_webpage(self.selenium, self.window, self.window.table, self.window.properties)
-            Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
-            print(f"Instrumented: {self.selenium.current_url()}")
-        
-        except Exception as e:
-            print(f"Exception: {e}")
-            traceback.print_exc()
-
-        finally:
-            clear_output()
-            self.window.redraw()

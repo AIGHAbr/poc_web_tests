@@ -1,78 +1,42 @@
-import time
 import ipywidgets as widgets
 
-from IPython.display import clear_output, display
+from IPython.display import display
 from NELL.Readme import readme
 from NELL.Selenium import Selenium
-from NELL.gui.GuiUtils import GuiUtils as gui
-from NELL.gui.MyDataFrame import MyDataFrame
-from NELL.gui.Properties import Properties
-from NELL.gui.Table import Table
-from NELL.gui.Tabs import Tabs
 from NELL.logger.Logger import Logger
-
+from NELL.gui.GuiUtils import GuiUtils as gui
+from NELL.gui.Tabs import Tabs
 
 class Window():
 
-    def __init__(self, on_data_changed):
-
-        self.on_data_changed = on_data_changed
-        dataframe = MyDataFrame(columns=["Alias", "Text", "Web", "Export", "Data", "Type", "Att"])
-        
-        _window = self
-        def try_fire_data_changed_event(self, b=None):
-            _window.on_data_changed(_window)
-        self.table = Table(dataframe, try_fire_data_changed_event)
-
-        self.properties = Properties()
-        self.try_fire_data_changed_event = try_fire_data_changed_event
-        self.table.data.set_change_listener(self.try_fire_data_changed_event) 
+    def __init__(self):
 
         # workshop
-        mapping = gui.new_cell(self.table.content, width='350px', height='250px', scroll=True)
-        props = gui.new_cell(self.properties.content, width='500px', height='250px', scroll=True)
-        self.tabs = Tabs(mapping, props)
+        self.tabs = Tabs()
+
         self.workshop = widgets.VBox([self.tabs.content]
             ,layout=widgets.Layout(
                 width='98%',
                 overflow='hidden' 
             ))
 
-        # for Nell
-        self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
-
         # buttons
-        self.start_button = gui.new_button(
-            'Star Logs', 'success', 'play'
-        )
-        
-        self.stop_button = gui.new_button(
-            'Pause Logs', 'warning', 'pause'
-        )
-
-        self.delete_button = gui.new_button(
-            'Delete Logs', 'danger', 'trash'
-        )
-
-        self.stop_button.disabled = True   
+        self.start_button = gui.new_button('Star Logs', 'success', 'play')  
+        self.stop_button = gui.new_button('Pause Logs', 'warning', 'pause')
+        self.delete_button = gui.new_button('Delete Logs', 'danger', 'trash')
         self.buttons = widgets.HBox([self.start_button, self.stop_button, self.delete_button])
-        
-        # content
-        self.content = widgets.HBox([self.dev_n_qa, widgets.VBox([                                      
-                                                        self.workshop,
-                                                        self.buttons,
-                                                        
-                                                    ]
-                                    ,layout=widgets.Layout(
-                                        width='98%',
-                                        overflow='hidden' 
-                                    ))])
-
-        self.table.data_event = _window.properties.reload
-
+        self.stop_button.disabled = True   
         self.start_button.on_click(self.start_recording)
         self.stop_button.on_click(self.stop_recording)
         self.delete_button.on_click(self.delete_logs)
+
+        # for Nell
+        self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
+        
+        # content
+        self.content = widgets.HBox([self.dev_n_qa, widgets.VBox([self.workshop, self.buttons],
+                                     layout=widgets.Layout(width='98%',overflow='hidden'))])
+
 
     def start_recording(self, b):
         if self.start_button.disabled: return
@@ -107,13 +71,11 @@ class Window():
 
 
     def redraw(self):
-        clear_output()
+        # clear_output()
         display(self.content, display_id="Playground")
-        time.sleep(3)
+        # time.sleep(3)
 
 
-    def reload(self, df=None, props={}):
+    def reload(self, df=None):
         if df is None: return
-        self.table.reload(df)
-        self.table.data.set_change_listener(self.try_fire_data_changed_event)
-        self.try_fire_data_changed_event()
+        self.tabs.tab_qa.reload(df)

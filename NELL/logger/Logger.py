@@ -1,6 +1,4 @@
 import datetime
-from NELL.logger.Snapshoter import Snapshoter
-
 
 class Logger:
 
@@ -40,11 +38,15 @@ class Logger:
 
     @staticmethod
     def reset_listeners():
+        if Logger.singleton == None:
+            Logger.singleton = Logger()        
         Logger.singleton.log_event_listeners = []
 
 
     @staticmethod
     def add_page_object(alias, xpath):
+        if Logger.singleton == None:
+            Logger.singleton = Logger()
         Logger.singleton.page_objects[alias] = xpath
 
 

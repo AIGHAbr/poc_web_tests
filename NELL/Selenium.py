@@ -1,12 +1,13 @@
+import re
 import time
-
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 from collections import defaultdict
 from xml.sax.saxutils import quoteattr
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from NELL.gui.MyDataFrame import MyDataFrame
 
 class Selenium:
 
@@ -167,7 +168,10 @@ class Selenium:
                 components.append(f"[@id='{child.attrs['id']}']")
                 break
 
-            siblings = [sib for sib in child.parent.find_all(child.name, recursive=False) if sib is not None]
+            siblings = []
+            try: siblings = [sib for sib in child.parent.find_all(child.name, recursive=False) if sib is not None]
+            except: pass
+
             if len(siblings) > 1:
                 index = siblings.index(child) + 1
                 components.append(f"{child.name}[{index}]")
@@ -178,7 +182,7 @@ class Selenium:
             child = child.parent
 
         components.reverse()
-        return '/'.join(components)
+        return "//*"+'/'.join(components)
     
 
 
@@ -210,3 +214,45 @@ class Selenium:
     def current_url(self):
         if self.driver is None: return None
         return self.driver.current_url
+    
+
+    def instrument_webpage(self, window):
+
+        global selectors
+        metadata = self.read_page_objects_metadata()
+        selectors = {}
+        rows = []
+
+        for tag_name, elements in metadata.items():
+            for element in elements:
+
+                att = element.pop('attributes', {})
+                clazz =  att.pop('class', [])
+
+                for k, v in att.items():
+                    element[k] = v
+
+                element['class'] = clazz
+                key = element.get('key', '')
+                selector = element.get('selector', '')
+                       
+                rows.append({
+                    "Export": False,
+                    "Alias": key,
+                    "key": key,
+                    "Web": selector,
+                    "Type": tag_name,
+                    "Data": element
+                })
+                
+                selector = selector.replace('"', "'")  
+                js = f"""
+                        var e01 = document.evaluate("{selector}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        if (e01) e01.setAttribute('key','{key}');
+                """ 
+
+                self.execute_script(js)
+                selectors[key]=selector
+
+
+        window.reload(MyDataFrame(rows))
