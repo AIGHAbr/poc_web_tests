@@ -22,14 +22,23 @@ class Tabs():
         self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
         
 
-        self.txt_robot = widgets.Textarea(
+        self.txt_robot01 = widgets.Textarea(
             layout=widgets.Layout(
-                width='99%', 
+                width='49%', 
                 height='564px',  
                 overflow='auto'
             )
         )
 
+        self.txt_robot02 = widgets.Textarea(
+            layout=widgets.Layout(
+                width='49%', 
+                height='564px',  
+                overflow='auto'
+            )
+        )
+
+        self.txt_robot = widgets.HBox([self.txt_robot01, self.txt_robot02])
         self.btn_robot = widgets.Button(description='Run AI', button_style='info')
         self.tab_robot = widgets.VBox([self.btn_robot, self.txt_robot])
         self.btn_robot.on_click(lambda _: self.on_click_ai())
@@ -70,11 +79,13 @@ class Tabs():
     def on_click_ai(self):
 
         if self.animating:
-            self.txt_robot.value = "I'm working, relax Man!\n" + self.txt_robot.value
+            self.txt_robot01.value = "I'm working, relax Man!\n" + self.txt_robot01.value
+            self.txt_robot02.value = "Idem!\n" + self.txt_robot02.value
             return
 
         if len(Logger.all_events())<3:
-            self.txt_robot.value = "Not enough logs to generate scripts!\n" + self.txt_robot.value
+            self.txt_robot01.value = "Not enough logs to generate scripts!\n" + self.txt_robot01.value
+            self.txt_robot02.value = "Idem!\n" + self.txt_robot02.value
             return
 
         current_logs = self.htmlLogs.value
@@ -89,12 +100,25 @@ class Tabs():
 
     def generate_scripts(self, logs):
         robot_script = generate_robot(logs)
+        tmp = robot_script
+        tmp = tmp.replace('<inicio keyword.resouce>', '')
+        tmp = tmp.replace('<inicio testsuit.robot>', '')
+        tmp = tmp.replace('<fim testsuit.robot>', '')
+        scripts = robot_script.split('<fim keyword.resouce>\n')
+
         def update_ui():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
             async def async_update_ui():
-                self.txt_robot.value = robot_script
+                try:
+                    self.txt_robot01.value = '*** Keywords.Resources ***\n' + scripts[0].lstrip()
+                    self.txt_robot01.value = '*** TestSuit.Robot ***\n' + scripts[1].lstrip()
+                    
+                except:
+                    self.txt_robot01.value = tmp
+                    self.txt_robot02.value = ''
+
                 self.stop_running_feedback()
 
             loop.run_until_complete(async_update_ui())
@@ -116,7 +140,7 @@ class Tabs():
         self.btn_robot.description = 'Run AI'
         self.btn_robot.disabled = False
         self.txt_robot.disabled = False
-        
+
 
     def start_running_feedback(self):
         self.txt_robot.disabled = True
