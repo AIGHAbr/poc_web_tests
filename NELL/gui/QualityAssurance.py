@@ -27,49 +27,9 @@ class QualityAssurance:
         xpath = self.data["Locator"][index]
         Selenium.instance().highlight_element(xpath)
 
-        # dt = self.data["Data"][index]
+        data = self.data["Data"][index]
+        print(data)
         # self.data_event(dt)
-
-
-    def reload(self, df=None, element=None, attributes={}):
-
-        if df is not None:
-            self.data = df
-        lines = len(self.data)
-
-        if lines == 0:
-            self.content.children = []
-            return
-
-        pageId = ''
-        grid_layout = widgets.Layout(width='300px', grid_gap='4px')
-        grid = widgets.GridspecLayout(lines, 2, layout=grid_layout)
-
-        for i, (index, row) in enumerate(self.data.iterrows()):
-            key = row["Key"]
-            pageId = row["PageId"]
-            locator = row["Locator"]
-            uid = row["UID"]
-
-            pnl = widgets.Button(tooltip=locator, icon='search', layout=widgets.Layout(width='50px', height='30px'))
-            pnl.on_click(lambda b, index=i: self.try_fire_web_event(b, index=index))
-            grid[i, 1] = pnl
-            grid[i, 0] = widgets.HTML(f"<b>{key}</b>", layout=widgets.Layout(width='220px'))
-
-            Logger.add_page_object(uid, locator)
-
-        attributes = widgets.HTML(layout=widgets.Layout(overflow='auto', width='50%', background_color='lightblue'))
-        elements = widgets.HBox([grid, attributes], layout=widgets.Layout(overflow='hidden', width='100%', background_color='lightgrey'))
-
-        header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}", layout=widgets.Layout(height='50px', background_color='lightgreen'))
-        self.content.children = [header, elements, widgets.HTML()]
-
-        try:
-            global win
-            if win is not None:
-                win.redraw()
-        except: pass
-
 
         # components = []
         # for (key, value) in attributes.items():
@@ -79,3 +39,40 @@ class QualityAssurance:
         #     components.append(txt)
 
         # self.content.children = components
+
+
+    def reload(self, df=None):
+
+        if df is not None:
+            self.data = df
+        lines = len(self.data)
+
+        if lines > 0: # Load the page objects
+
+            pageId = ''
+            grid = widgets.GridspecLayout(lines, 2, layout=widgets.Layout(width='300px'))
+
+            for i, (index, row) in enumerate(self.data.iterrows()):
+                key = row["Key"]
+                pageId = row["PageId"]
+                locator = row["Locator"]
+                uid = row["UID"]
+
+                pnl = widgets.Button(tooltip=locator, icon='search', layout=widgets.Layout(width='50px', height='30px'))
+                pnl.on_click(lambda b, index=i: self.try_fire_web_event(b, index=index))
+                grid[i, 1] = pnl
+                grid[i, 0] = widgets.HTML(f"<div>{key}</div>", layout=widgets.Layout(width='220px'))
+
+                Logger.add_page_object(uid, locator)
+
+            self.attributes = widgets.VBox(layout=widgets.Layout(overflow='auto', width='50%', background_color='lightblue'))
+            elements = widgets.HBox([grid, self.attributes], layout=widgets.Layout(overflow='hidden', width='100%', background_color='lightgrey'))
+
+            header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}<br><b>Page Objects:</b>", layout=widgets.Layout(height='50px', background_color='lightgreen'))
+            self.content.children = [header, elements, widgets.HTML()]
+
+        try:
+            global win
+            if win is not None:
+                win.redraw()
+        except: pass
