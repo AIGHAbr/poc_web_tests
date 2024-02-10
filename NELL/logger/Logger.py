@@ -1,7 +1,5 @@
 import datetime
 
-from NELL import Selenium
-
 class Logger:
 
     singleton = None
@@ -79,7 +77,7 @@ class Logger:
         if url is not None:
             if event.get('info', None) == 'page loaded':
                 Logger.singleton.page_counter = Logger.singleton.page_counter + 1
-                event['page_id'] = f'page_{Logger.singleton.page_counter}'
+                event['page_id'] = f'Page_{Logger.singleton.page_counter}'
 
         sevent = str(event)
         if sevent in Logger.singleton.logged_events: return event
