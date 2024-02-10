@@ -1,9 +1,8 @@
 import ipywidgets as widgets
 from pandas import DataFrame
-
 from NELL.Selenium import Selenium
 from NELL.logger.Logger import Logger
-from IPython.display import display
+
 
 class QualityAssurance:
 
@@ -25,7 +24,7 @@ class QualityAssurance:
 
     def try_fire_web_event(self, b, index):
 
-        elementId = self.data["Key"][index]
+        uid = self.data["UID"][index]
         pageId = self.data["PageId"][index]
         locator = self.data["Locator"][index]
         Selenium.instance().highlight_element(locator)
@@ -38,30 +37,39 @@ class QualityAssurance:
         radios = widgets.RadioButtons(
             options=options,
             disabled=False,
-            layout={'width': 'max-content'}
+            layout={'width': 'max-content'},
+            selected_index=-1
         )
 
         self.attributes.children = [widgets.VBox([radios])]
         radios.observe(lambda change: 
-            self.attribute_selected(pageId, elementId, locator, change.new, index), names='value')
+            self.attribute_selected(pageId, uid, locator, change.new, index), names='value')
+        
+        self.attribute_selected(pageId, uid, locator, options[0], index)
 
-        self.attribute_selected(pageId, elementId, locator, radios.options[0], index)
 
+    def attribute_selected(self, pageId, uid, locator, att, index):
 
-    def attribute_selected(self, pageId, elementId, locator, att, index):
         self.pageId = pageId
-        self.elementId = elementId
-        self.locator = f"{locator}@{att}"
+        self.pageUrl = Selenium.instance().current_url()
+        self.uid = uid
+        self.locator = f"{locator}"
+        self.att_name = att
+        self.att_value = self.data["Data"][index][att]
 
-        value = self.data["Data"][index][att]
         self.footer.children = [widgets.HTML(
             f"""<br/>
-                <b>PageId:</b>{pageId}<br/> 
-                <b>ObjectId:</b>{elementId}<br/>
-                <b>Locator:</b>{self.locator}<br/>
-                <div style='background-color: yellow; width: 300px'>
-                <b style='background-color: yellow; width: 300px'>Value:</b><br/>{value}<div>
-            """)]
+                <b>Page Url:</b> {self.pageUrl}<br/>                 
+                <b>UID:</b> {self.uid}<br/>
+                <b>Locator:</b> {self.locator}<br/>
+                <b>Attribute:</b> {self.att_name}<br/>
+                <div style='background-color: #fff9c4; padding: 10px; width: 350px;'>
+                    <b>Attribute Value:</b><br/>{self.att_value}
+                </div>
+            """,
+            layout=widgets.Layout(overflow='auto')
+        )]
+
 
 
     def reload(self, df=None):
@@ -72,12 +80,10 @@ class QualityAssurance:
         lines = len(self.data)
         if lines > 0: 
 
-            pageId = ''
             self.grid = widgets.GridspecLayout(lines, 2, layout=widgets.Layout(width='300px', overflow='auto'))
 
             for i, (index, row) in enumerate(self.data.iterrows()):
                 key = row["Key"]
-                pageId = row["PageId"]
                 locator = row["Locator"]
                 uid = row["UID"]
 
@@ -94,8 +100,7 @@ class QualityAssurance:
             pgObjs = widgets.VBox([self.grid, widgets.HTML()])
             elements = widgets.HBox([pgObjs, self.attributes], layout=widgets.Layout(overflow='hidden'))
 
-            header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}<br/>", layout=widgets.Layout(height='50px'))
-            self.content.children = [header, elements, self.footer, widgets.HTML()]
+            self.content.children = [elements, self.footer, widgets.HTML()]
 
         try:
             global win

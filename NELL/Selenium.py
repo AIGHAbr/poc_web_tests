@@ -94,7 +94,7 @@ class Selenium:
 
 
     def generate_key(self, tag, element, counter):
-        base = {"input": "txt", "button": "btn", "a": "lnk", "img": "img"}
+        base = {"input": "txt", "button": "btn", "a": "lnk", "img": "img", "svg": "svg"}
         prefix = base.get(tag, "elem")
 
         parts = [prefix]
@@ -192,7 +192,7 @@ class Selenium:
 
         html = self.driver.page_source.encode("utf-8")
         soup = BeautifulSoup(html, 'html.parser')
-        elements = soup.find_all(['input', 'button', 'a', 'img'])
+        elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
 
         counter = defaultdict(int)
         result = defaultdict(list)
