@@ -24,17 +24,18 @@ class QualityAssurance:
 
 
     def try_fire_web_event(self, b, index):
-
         xpath = self.data["Locator"][index]
         Selenium.instance().highlight_element(xpath)
 
-        components = []
-        data = self.data["Data"][index]
-        for (key, value) in data.items():
-            components.append(widgets.HTML(f"<div><b>{key}:</b> {value}</div>", 
-                                            layout=widgets.Layout(width='400px')))
+        options = [key for key, value in self.data["Data"][index].items()]
 
-        self.attributes.children = components
+        radio_buttons = widgets.RadioButtons(
+            options=options,
+            disabled=False,
+            layout={'width': 'max-content'}
+        )
+
+        self.attributes.children = [widgets.VBox([radio_buttons])]
 
 
     def reload(self, df=None):
