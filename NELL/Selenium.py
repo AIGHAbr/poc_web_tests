@@ -259,8 +259,6 @@ class Selenium:
                 self.execute_script(js)
                 selectors[uid]=selector
 
-        print(rows)
         rows_df = DataFrame(rows)
         window.reload(df=rows_df)
         self.execute_script(injector.js)
-        # window.redraw()

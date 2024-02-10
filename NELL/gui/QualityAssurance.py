@@ -24,14 +24,16 @@ class QualityAssurance:
 
 
     def try_fire_web_event(self, b, index):
-        dt = self.data["Data"][index]
-        self.data_event(dt)
-        xpath = self.data["Web"][index]
+        xpath = self.data["Locator"][index]
         Selenium.instance().highlight_element(xpath)
+
+        # dt = self.data["Data"][index]
+        # self.data_event(dt)
 
 
     def reload(self, df=None, element=None, attributes={}):
-        if df is not None: 
+
+        if df is not None:
             self.data = df
         lines = len(self.data)
 
@@ -40,7 +42,8 @@ class QualityAssurance:
             return
 
         pageId = ''
-        grid = widgets.GridspecLayout(lines, 2, layout=widgets.Layout(width='180px'))
+        grid_layout = widgets.Layout(width='300px', grid_gap='4px')
+        grid = widgets.GridspecLayout(lines, 2, layout=grid_layout)
 
         for i, (index, row) in enumerate(self.data.iterrows()):
             key = row["Key"]
@@ -50,25 +53,23 @@ class QualityAssurance:
 
             pnl = widgets.Button(tooltip=locator, icon='search', layout=widgets.Layout(width='50px', height='30px'))
             pnl.on_click(lambda b, index=i: self.try_fire_web_event(b, index=index))
-            grid[i, 0] = pnl   
-            
-            print(f"key: {key}, locator: {locator}, uid: {uid}")
-            grid[i, 1] = widgets.HTML(f"<div>{key}</div>", layout=widgets.Layout(width='100px'))
+            grid[i, 1] = pnl
+            grid[i, 0] = widgets.HTML(f"<b>{key}</b>", layout=widgets.Layout(width='220px'))
 
             Logger.add_page_object(uid, locator)
 
-        attributes = widgets.HTML(layout=widgets.Layout(overflow='auto', width='50%'))
-        self.elements = widgets.HBox([grid, attributes], layout=widgets.Layout(overflow='hidden', width='100%'))
+        attributes = widgets.HTML(layout=widgets.Layout(overflow='auto', width='50%', background_color='lightblue'))
+        elements = widgets.HBox([grid, attributes], layout=widgets.Layout(overflow='hidden', width='100%', background_color='lightgrey'))
 
-        self.header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}", layout=widgets.Layout(height='50px'))
-        self.content.children = [self.header, self.elements, widgets.HTML()]
+        header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}", layout=widgets.Layout(height='50px', background_color='lightgreen'))
+        self.content.children = [header, elements, widgets.HTML()]
 
         try:
             global win
-            if win is not None: 
-                win.redraw();
-        
+            if win is not None:
+                win.redraw()
         except: pass
+
 
         # components = []
         # for (key, value) in attributes.items():
