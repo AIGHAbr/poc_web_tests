@@ -20,7 +20,6 @@ class Tabs():
         self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height=height, border='0px solid white')
         self.htmlLogs = widgets.HTML()
         self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
-        
 
         self.txt_robot01 = widgets.Textarea(
             layout=widgets.Layout(

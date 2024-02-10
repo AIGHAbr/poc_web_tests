@@ -1,27 +1,19 @@
 import ipywidgets as widgets
+from pandas import DataFrame
 
 from NELL.Selenium import Selenium
 from NELL.logger.Logger import Logger
-from NELL.gui.MyDataFrame import MyDataFrame
 
 
 class QualityAssurance:
 
     def __init__(self):       
-        objs = widgets.HTML(value="<b>Page Objects</b>", layout=widgets.Layout(height="30px", width='30%'))
-        attrs = widgets.HTML(value="<b>Attributes</b>", layout=widgets.Layout(height="30px", width='68%'))
-        self.header = widgets.HBox([objs, attrs], layout=widgets.Layout(height="30px", width='98%'))
-
-        self.page_objects = widgets.VBox([], layout=widgets.Layout(overflow='auto', width='98%'))
-        self.attributes = widgets.VBox([], layout=widgets.Layout(overflow='auto', width='98%'))
-
-        self.body = widgets.HBox([self.page_objects, self.attributes], layout=widgets.Layout(height="30px", width='98%'))        
-        self.content = widgets.VBox([self.header, self.body], layout=widgets.Layout(width='98%'))
+        self.content = widgets.VBox([], layout=widgets.Layout(overflow='auto', width='98%'))
 
         self.data_event = None
         self.web_event = None
 
-        self.data = MyDataFrame(columns=["Alias", "Text", "Web", "Export", "Data", "Type", "Att"])
+        self.data = DataFrame(columns=["Key", "PageId", "Locator", "Data", "Type", "UID"])
         self.reload()
 
 
@@ -39,35 +31,50 @@ class QualityAssurance:
 
 
     def reload(self, df=None, element=None, attributes={}):
+        if df is not None: 
+            self.data = df
+        lines = len(self.data)
 
-        print("Reloading Quality Assurance *************************************")
-        if df is not None: self.data = df
-        df = self.data
-        lines = len(self.data) + 1
-        grid = widgets.GridspecLayout(lines, 2)
+        if lines == 0:
+            self.content.children = []
+            return
 
-        for i in range(lines):
+        pageId = ''
+        grid = widgets.GridspecLayout(lines, 2, layout=widgets.Layout(width='180px'))
+
+        for i, (index, row) in enumerate(self.data.iterrows()):
+            key = row["Key"]
+            pageId = row["PageId"]
+            locator = row["Locator"]
+            uid = row["UID"]
+
+            pnl = widgets.Button(tooltip=locator, icon='search', layout=widgets.Layout(width='50px', height='30px'))
+            pnl.on_click(lambda b, index=i: self.try_fire_web_event(b, index=index))
+            grid[i, 0] = pnl   
             
-            cell_value_alias = getattr(df.iloc[i-1], "Alias", '') if i > 0 else ''
-            cell_value_web = getattr(df.iloc[i-1], "Web", '') if i > 0 else ''
+            print(f"key: {key}, locator: {locator}, uid: {uid}")
+            grid[i, 1] = widgets.HTML(f"<div>{key}</div>", layout=widgets.Layout(width='100px'))
 
-            pnl = widgets.Button(tooltip=cell_value_web, icon='search', layout=widgets.Layout(width='50px', height='30px'))
-            pnl.on_click(lambda b, index=i-1: self.try_fire_web_event(b, index))
+            Logger.add_page_object(uid, locator)
 
-            grid[i, 0] = widgets.Text(value=str(cell_value_alias), layout=widgets.Layout(width='250px', weight='2'))        
-            grid[i, 1] = pnl
+        attributes = widgets.HTML(layout=widgets.Layout(overflow='auto', width='50%'))
+        self.elements = widgets.HBox([grid, attributes], layout=widgets.Layout(overflow='hidden', width='100%'))
 
-            Logger.add_page_object(cell_value_alias, cell_value_web)
+        self.header = widgets.HTML(value=f"<b>{pageId}:</b> {Selenium.instance().current_url()}", layout=widgets.Layout(height='50px'))
+        self.content.children = [self.header, self.elements, widgets.HTML()]
 
-        print(grid)
-        self.page_objects.children = [grid]
+        try:
+            global win
+            if win is not None: 
+                win.redraw();
+        
+        except: pass
 
+        # components = []
+        # for (key, value) in attributes.items():
+        #     alias = element.get('key') if element else key
+        #     tmp = f"{alias}@{key}:{value}"
+        #     txt = widgets.Text(value=tmp, tooltip=alias, layout=widgets.Layout(height='30px', width='68%'), disabled=True)
+        #     components.append(txt)
 
-        components = []
-        for (key, value) in attributes.items():
-            alias = element.get('key') if element else key  # Ajuste caso 'element' seja None
-            tmp = f"{alias}@{key}:{value}"
-            txt = widgets.Text(value=tmp, tooltip=alias, layout=widgets.Layout(height='30px', width='68%'), disabled=True)
-            components.append(txt)
-
-        self.content.children = components
+        # self.content.children = components

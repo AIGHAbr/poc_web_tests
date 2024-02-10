@@ -3,11 +3,11 @@ import traceback
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from xml.sax.saxutils import quoteattr
+from pandas import DataFrame
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from NELL.gui.MyDataFrame import MyDataFrame
 import NELL.logger.js_injector as injector
 
 class Selenium:
@@ -26,6 +26,7 @@ class Selenium:
 
     def __init__(self):
         self.driver = None
+        self.last_page_id = None
         prefs = {"profile.default_content_setting_values.notifications": 1}
         self.chrome_options = Options()
         #self.chrome_options.add_argument("--headless")
@@ -218,6 +219,9 @@ class Selenium:
 
     def instrument_webpage(self, window, page_id=""):
 
+        if self.last_page_id == page_id: return
+        self.last_page_id = page_id
+
         global selectors
         metadata = self.read_page_objects_metadata()
         selectors = {}
@@ -234,26 +238,29 @@ class Selenium:
 
                 element['class'] = clazz
                 key = element.get('key', '')
+                uid = f"{page_id}:{tag_name}:{key}"
                 selector = element.get('selector', '')
                        
                 rows.append({
-                    "Export": False,
-                    "Alias": page_id + "@" + key,
-                    "key": key,
-                    "Web": selector,
+                    "PageId": page_id,
+                    "Key": key,
+                    "Locator": selector,
                     "Type": tag_name,
+                    "UID": f"{page_id}:{tag_name}:{key}",
                     "Data": element
                 })
                 
                 selector = selector.replace('"', "'")  
                 js = f"""
                         var e01 = document.evaluate("{selector}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                        if (e01) e01.setAttribute('key','{page_id}@{key}');
+                        if (e01) e01.setAttribute('uid','{uid}');
                 """ 
 
                 self.execute_script(js)
-                selectors[key]=selector
+                selectors[uid]=selector
 
-
-        window.reload(MyDataFrame(rows))
+        print(rows)
+        rows_df = DataFrame(rows)
+        window.reload(df=rows_df)
         self.execute_script(injector.js)
+        # window.redraw()

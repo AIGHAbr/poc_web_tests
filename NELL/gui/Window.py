@@ -11,6 +11,9 @@ class Window():
 
     def __init__(self):
 
+        global win
+        win = self
+
         # workshop
         self.tabs = Tabs()
 
