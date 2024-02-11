@@ -64,7 +64,6 @@ class Tabs():
 
 
     def log_event(self, event, events):
-
         event_list = []
         size = len(events)
         for i, evt in enumerate(reversed(events), start=1):
@@ -72,8 +71,6 @@ class Tabs():
             event_list.append(f"{j}. {str(evt)}")
 
         self.htmlLogs.value = "<br/>\n".join(event_list)
-        print(events)
-
 
     def on_click_ai(self):
 

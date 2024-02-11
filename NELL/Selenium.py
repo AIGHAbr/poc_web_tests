@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import NELL.logger.js_injector as injector
+from IPython.display import display
 
 
 class Selenium:
@@ -207,12 +208,15 @@ class Selenium:
 
     def instrument_webpage(self, window, page_id=""):
 
+        print(f"Instrumenting the webpage {page_id}")
+
         if self.last_page_id == page_id: return
         self.last_page_id = page_id
 
         rows = []
-
         metadata = self.read_page_objects_metadata()
+        display(f"Metadata: {metadata}")
+
         for tag_name, elements in metadata.items():
             for element in elements:
 

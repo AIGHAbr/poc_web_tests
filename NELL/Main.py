@@ -1,11 +1,10 @@
 import time
 import threading
-import traceback
 from NELL.Selenium import Selenium
 from NELL.gui.Window import Window
 from NELL.logger.Logger import Logger
 from NELL.logger.LogHttpServer import start_server
-
+from IPython.display import display, clear_output
 
 class Main:
 
@@ -39,30 +38,33 @@ class Main:
     def check_browser(self):
         while True:
             if Logger.disabled():
-                time.sleep(0.5)
+                time.sleep(1)
                 continue
 
-            try:
-                if not self.selenium.is_page_loaded():
-                    time.sleep(0.1)
-                    continue
+            # try:
+            
+            if not self.selenium.is_page_loaded():
+                time.sleep(0.1)
+                continue
 
-                if self.selenium.current_url() is None:
-                    time.sleep(0.1)
-                    continue
+            if self.selenium.current_url() is None:
+                time.sleep(0.1)
+                continue
 
-                if self.current_url == self.selenium.current_url():
-                    time.sleep(0.1)
-                    continue
+            if self.current_url == self.selenium.current_url():
+                time.sleep(0.1)
+                continue
 
-                event = Logger.log_event({'info': 'page loaded', 'url': self.selenium.current_url()})
-                self.current_url = self.selenium.current_url()
-                self.selenium.execute_script("window.hasEventListeners=false;")
-                self.selenium.instrument_webpage(self.window, event['page_id'])
+            clear_output()
+            self.window.redraw()
+            event = Logger.log_event({'info': 'page loaded', 'url': self.selenium.current_url()})
+            self.current_url = self.selenium.current_url()
+            self.selenium.execute_script("window.hasEventListeners=false;")
+            self.selenium.instrument_webpage(self.window, event['page_id'])
 
-            except Exception as e:
-                traceback.print_exc()
-                print(f"Exception: {e}")
-                self.selenium.new_driver(restart=True)
+            # except Exception as e:
+            #     traceback.print_exc()
+            #     print(f"Exception: {e}")
+            #     self.selenium.new_driver(restart=True)
 
-            time.sleep(0.5)
+            time.sleep(0.1)

@@ -22,38 +22,65 @@ js = """
         });
     }
 
+    function findXPath(element) {
+        if (element.id !== '')  return 'id("${element.id}")';        
+        if (element === document.body)  return '/html/' + element.tagName.toLowerCase();
+        var ix = 0;
+        var siblings = element.parentNode.childNodes;
+        for (var i = 0; i < siblings.length; i++) {
+            var sibling = siblings[i];
+            if (sibling === element) 
+                return findXPath(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
+            if (sibling.nodeType === 1 && sibling.tagName === element.tagName) ix++;
+        }
+    }
+        
     function setUpEventListeners() {
+    
         document.addEventListener('click', function(event) {
             if (window.processingEnterKey) {
                 return;
             }
             let element = event.target;
             let tagName = element.tagName.toLowerCase();
-            let detail = tagName === 'button' ? 'text: ' + element.innerText : 'value: ' + element.value;
-            sendLogToServer({event: 'click', tagName: tagName, widget_id: element.getAttribute('key')});
-        });
+            
+            let detail = tagName === 'button' ? 'text: ' + element.innerText : 'value: ' + element.value;     
+            log = {
+                event: 'click', 
+                tagName: tagName
+            }
 
+            let uid = element.getAttribute('uid'); 
+            if(uid==None) log['widget_id'] = uid;
+            else log['xpath'] = findXPath(element);
+            sendLogToServer(log);
+            
+        });
+        
         document.addEventListener('keydown', function(event) {
             if ((event.key === 'Enter' || event.key === 'Tab') && !window.processingEnterKey) {
                 window.processingEnterKey = true;
                 let element = event.target;
                 let tagName = element.tagName.toLowerCase();
-                sendLogToServer({
+                
+                 log = {
                     event: 'sendkeys', 
                     tagName: tagName, 
-                    widgwt_id: element.getAttribute('key'), 
                     text: element.value,
                     specialKey: event.key
-                });
+                }
+                
+                let uid = element.getAttribute('uid'); 
+                if(uid==None) log['widget_id'] = uid;
+                else log['xpath'] = findXPath(element);
+                sendLogToServer(log);
+                
                 setTimeout(function() {
                     window.processingEnterKey = false;
                 }, 0);
             }
         });
-
-        // Se necessário, adicione o blurListener
     }
-
     setUpEventListeners();
 
     var observer = new MutationObserver(function(mutations) {
