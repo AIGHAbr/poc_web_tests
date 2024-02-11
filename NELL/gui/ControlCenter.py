@@ -9,11 +9,11 @@ class ControlCenter:
 
     def __init__(self):
 
-        os.environ["OPENAI_API_KEY"]='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'
+        os.environ["OPENAI_API_KEY"]='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'
 
         self.url_input = gui.new_textfield(
             'Base URL:', 
-            'https://life.stg.wellzesta.com/login'
+            'https://active.stg.wellzesta.com/'
         )
         
         self.test_name_input = gui.new_textfield(

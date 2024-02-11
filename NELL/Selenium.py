@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import NELL.logger.js_injector as injector
+from IPython.display import display, clear_output
 
 class Selenium:
 
@@ -223,10 +224,14 @@ class Selenium:
         self.last_page_id = page_id
 
         global selectors
-        metadata = self.read_page_objects_metadata()
-        selectors = {}
+        try: 
+            len(selectors)
+        except:
+            selectors = {}
+
         rows = []
 
+        metadata = self.read_page_objects_metadata()
         for tag_name, elements in metadata.items():
             for element in elements:
 

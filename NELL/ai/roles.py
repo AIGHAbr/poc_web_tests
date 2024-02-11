@@ -4,6 +4,7 @@ e ATDD (Desenvolvimento Guiado por Testes de Aceitação). Peço que você crie 
 Siga as seguintes diretivas: 
 
 * Escrita em Inglês: Todos os scripts devem ser escritos em inglês.
+* Preste atenção nos eventos 'qa', eles descrevem testes que devem ser escritos. Utilize essa informação. 
 * Análise de Eventos: Utilize todos os eventos registrados nos logs para compreender as ações realizadas.
 * Assertivas: Baseie-se nos eventos auxiliares, como 'change' e 'info', para criar verificações e assertivas que confirmem o comportamento esperado da aplicação.
 * Caminho Feliz: Desenvolva scripts que cubram o fluxo principal de uso validando os cenários de sucesso.

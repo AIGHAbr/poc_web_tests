@@ -2,6 +2,7 @@ import ipywidgets as widgets
 from pandas import DataFrame
 from NELL.Selenium import Selenium
 from NELL.logger.Logger import Logger
+from IPython.display import clear_output
 
 
 class QualityAssurance:
@@ -23,8 +24,8 @@ class QualityAssurance:
 
 
     def try_fire_web_event(self, b, index):
-
         uid = self.data["UID"][index]
+        key = self.data["Key"][index]
         pageId = self.data["PageId"][index]
         locator = self.data["Locator"][index]
         Selenium.instance().highlight_element(locator)
@@ -49,27 +50,41 @@ class QualityAssurance:
 
 
     def attribute_selected(self, pageId, uid, locator, att, index):
-
         self.pageId = pageId
         self.pageUrl = Selenium.instance().current_url()
         self.uid = uid
-        self.locator = f"{locator}"
+        self.locator = locator
         self.att_name = att
         self.att_value = self.data["Data"][index][att]
 
-        self.footer.children = [widgets.HTML(
-            f"""<br/>
-                <b>Page Url:</b> {self.pageUrl}<br/>                 
-                <b>UID:</b> {self.uid}<br/>
+        html_widget = widgets.HTML(
+            value=f"""<br/>
+                <b>Page Url:</b> {self.pageUrl}<br/>
                 <b>Locator:</b> {self.locator}<br/>
                 <b>Attribute:</b> {self.att_name}<br/>
                 <div style='background-color: #fff9c4; padding: 10px; width: 350px;'>
                     <b>Attribute Value:</b><br/>{self.att_value}
                 </div>
-            """,
-            layout=widgets.Layout(overflow='auto')
-        )]
+            """
+        )
 
+        self.memo = widgets.Textarea(
+            placeholder='Store this for what purpose?',
+            layout=widgets.Layout(width='350px', height='50px')
+        )
+
+        btn = widgets.Button(description='Store Attribute Value', icon='save', layout=widgets.Layout(width='200px'))
+        btn.on_click(lambda b: self.log_attribute_data(b))
+        self.footer.children = [html_widget, self.memo, btn]
+
+
+    def log_attribute_data(self, b=None):
+        Logger.log_event({'qa':self.memo.value, 
+                          'uid': self.uid,
+                          'locator': self.locator,
+                          'attribute_name': self.att_name,
+                          'attribute_value': self.att_value
+                        })
 
 
     def reload(self, df=None):
@@ -101,6 +116,9 @@ class QualityAssurance:
             elements = widgets.HBox([pgObjs, self.attributes], layout=widgets.Layout(overflow='hidden'))
 
             self.content.children = [elements, self.footer, widgets.HTML()]
+
+        else:
+            self.content.children = [widgets.HTML("<h2>No page objects found</h2>")]
 
         try:
             global win
