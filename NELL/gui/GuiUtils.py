@@ -1,50 +1,50 @@
 import ipywidgets as widgets
 from NELL.gui.WidgetController import WidgetController
 
-class GuiUtils():
+
+class GuiUtils:
 
     @staticmethod
-    def new_cell(content, width='100%', height='100%', scroll=False, 
-                border='5px solid white', hiddable=False, visible=True):
-        
-        cell_box = widgets.Box([content], 
-            layout=widgets.Layout(
-                border=border,
-                overflow='auto' if scroll else 'hidden'
-            )) 
+    def new_cell(content, width='100%', height='100%', scroll=False,
+                 border='5px solid white', can_hide=False, visible=True):
 
-        if width != None: cell_box.layout.width = width
-        if height != None: cell_box.layout.height = height
+        cell_box = widgets.Box([content],
+                               layout=widgets.Layout(
+                                   border=border,
+                                   overflow='auto' if scroll else 'hidden'
+                               ))
 
-        if not hiddable: return cell_box
-        
-        btnShowHide = widgets.Button(description='x')
-        btnShowHide.layout.width = '30px'
-        btnShowHide.layout.height = '30px'
+        if width is not None: cell_box.layout.width = width
+        if height is not None: cell_box.layout.height = height
+
+        if not can_hide: return cell_box
+
+        btn_show_hide = widgets.Button(description='x')
+        btn_show_hide.layout.width = '30px'
+        btn_show_hide.layout.height = '30px'
         controller = WidgetController(cell_box)
-        
-        def toggle_visibility(b):
-            if btnShowHide.description == 'x':
-                btnShowHide.description = '+'
+
+        def toggle_visibility():
+            if btn_show_hide.description == 'x':
+                btn_show_hide.description = '+'
                 controller.hideWidget()
                 return
-            
-            btnShowHide.description = 'x'
+
+            btn_show_hide.description = 'x'
             controller.showWidget()
 
-        btnShowHide.on_click(toggle_visibility)
-        result = widgets.VBox([btnShowHide, cell_box])
+        btn_show_hide.on_click(toggle_visibility)
+        result = widgets.VBox([btn_show_hide, cell_box])
 
-        if not visible: 
+        if not visible:
             controller.hideWidget()
-            btnShowHide.description = '+'
+            btn_show_hide.description = '+'
 
         return result
-    
 
     @staticmethod
-    def new_textfield(description, value=None, 
-                        width='100%', height='30px', border='5px solid white'):
+    def new_textfield(description, value=None,
+                      width='100%', height='30px', border='5px solid white'):
         return widgets.Text(
             value=value,
             description=description,
@@ -56,10 +56,9 @@ class GuiUtils():
             )
         )
 
-
     @staticmethod
     def new_textarea(description, value=None,
-                            width='100%', height='100px', border='5px solid white'):
+                     width='100%', height='100px', border='5px solid white'):
         txt = widgets.Textarea(
             value=value,
             description=description,
@@ -68,13 +67,12 @@ class GuiUtils():
                 border=border
             )
         )
-        if width != None: txt.layout.width = width
-        if height != None: txt.layout.height = height
-    
+        if width is not None: txt.layout.width = width
+        if height is not None: txt.layout.height = height
 
     @staticmethod
     def new_divider(width='100%', border='5px solid white'):
-        
+
         return widgets.HTML(
             '<hr>',
             layout=widgets.Layout(
@@ -82,7 +80,6 @@ class GuiUtils():
                 border=border
             )
         )
-
 
     @staticmethod
     def new_button(description, button_style, icon):

@@ -34,7 +34,7 @@ class Window():
         self.delete_button.on_click(self.delete_logs)
 
         # for Nell
-        self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', hiddable=True, visible=False)
+        self.dev_n_qa = gui.new_cell(widgets.HTML(value=readme()), width='300px', height='660px', can_hide=True, visible=False)
         
         # content
         self.content = widgets.HBox([self.dev_n_qa, widgets.VBox([self.workshop, self.buttons],

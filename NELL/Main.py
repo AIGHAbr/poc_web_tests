@@ -1,11 +1,11 @@
 import time
 import threading
 import traceback
-
 from NELL.Selenium import Selenium
 from NELL.gui.Window import Window
 from NELL.logger.Logger import Logger
 from NELL.logger.LogHttpServer import start_server
+
 
 class Main:
 
@@ -16,29 +16,25 @@ class Main:
         self.selenium = Selenium.instance()
 
         self.init_gui()
-        Logger.log_event({'info':'selenium framework'}, reset=True)
-        
+        Logger.log_event({'info': 'selenium framework'}, reset=True)
+
         self.init_logger_server()
         self.init_browser_monitoring()
-      
 
     def init_gui(self):
         self.selenium.new_driver(restart=True)
         self.window = Window()
         self.window.redraw()
 
-
     def init_logger_server(self):
         server_thread = threading.Thread(target=start_server, args=(8000,))
         server_thread.daemon = True
         server_thread.start()
 
-
     def init_browser_monitoring(self):
         browser_thread = threading.Thread(target=self.check_browser)
         browser_thread.daemon = True
         browser_thread.start()
-
 
     def check_browser(self):
         while True:
@@ -51,7 +47,7 @@ class Main:
                     time.sleep(0.1)
                     continue
 
-                if self.selenium.current_url() is None: 
+                if self.selenium.current_url() is None:
                     time.sleep(0.1)
                     continue
 
@@ -59,10 +55,10 @@ class Main:
                     time.sleep(0.1)
                     continue
 
-                event = Logger.log_event({'info':'page loaded', 'url': self.selenium.current_url()})
+                event = Logger.log_event({'info': 'page loaded', 'url': self.selenium.current_url()})
                 self.current_url = self.selenium.current_url()
                 self.selenium.execute_script("window.hasEventListeners=false;")
-                self.selenium.instrument_webpage(self.window, event['page_id'])  
+                self.selenium.instrument_webpage(self.window, event['page_id'])
 
             except Exception as e:
                 traceback.print_exc()

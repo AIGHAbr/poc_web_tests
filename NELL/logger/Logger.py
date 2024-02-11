@@ -60,33 +60,39 @@ class Logger:
 
     @staticmethod
     def log_event(event, reset=False):
-        if reset: Logger.singleton.reset_logs()
+        logger = Logger.singleton
+        if reset: logger.reset_logs()
         if event is None: return event
-        if Logger.singleton.disabled: return event
+        if logger.disabled: return event
 
         if event.get('timestamp', None) is None:
             event['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         id = event.get('id', None)
         if id is not None:
-            xpath = Logger.singleton.page_objects.get(id, None)
+            xpath = logger.page_objects.get(id, None)
             if xpath is not None:
                 event['xpath'] = xpath
 
         url = event.get('url', None)
         if url is not None:
             if event.get('info', None) == 'page loaded':
-                Logger.singleton.page_counter = Logger.singleton.page_counter + 1
-                event['page_id'] = f'Page_{Logger.singleton.page_counter}'
+                logger.page_counter = logger.page_counter + 1
+                event['page_id'] = f'Page_{logger.page_counter}'
+                try:
+                    if url == logger.events[-1].get('url', None):
+                        pass
+                except:
+                    pass
 
         sevent = str(event)
-        if sevent in Logger.singleton.logged_events: return event
+        if sevent in logger.logged_events: return event
 
-        Logger.singleton.logged_events.add(sevent)
-        Logger.singleton.events.append(event)
+        logger.logged_events.add(sevent)
+        logger.events.append(event)
 
-        for listener in Logger.singleton.log_event_listeners:
-            listener(event, Logger.singleton.events)
+        for listener in logger.log_event_listeners:
+            listener(event, logger.events)
 
         return event
 

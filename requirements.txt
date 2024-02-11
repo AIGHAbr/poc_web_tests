@@ -4,3 +4,4 @@ beautifulsoup4
 pandas
 ipywidgets
 openai==1.0.0
+notebook==7.1.0rc1
