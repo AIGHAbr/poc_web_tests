@@ -182,6 +182,7 @@ class Selenium:
     def read_page_objects_metadata(self):
 
         html = self.driver.page_source.encode("utf-8")
+        display(html)
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
 

@@ -1,7 +1,9 @@
-selenium
+selenium~=4.17.2
 webdriver_manager
-beautifulsoup4
-pandas
-ipywidgets
+beautifulsoup4~=4.12.2
+pandas~=2.1.4
+ipywidgets~=8.0.4
 openai==1.0.0
 notebook==7.1.0rc1
+nell~=0.1
+ipython~=8.20.0

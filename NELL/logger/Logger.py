@@ -52,10 +52,10 @@ class Logger:
 
 
     @staticmethod
-    def add_page_object(alias, xpath):
+    def add_page_object(uid, xpath):
         if Logger.singleton == None:
             Logger.singleton = Logger()
-        Logger.singleton.page_objects[alias] = xpath
+        Logger.singleton.page_objects[uid] = xpath
 
 
     @staticmethod
@@ -68,9 +68,9 @@ class Logger:
         if event.get('timestamp', None) is None:
             event['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        id = event.get('id', None)
+        uid = event.get('widget_id', None)
         if id is not None:
-            xpath = logger.page_objects.get(id, None)
+            xpath = logger.page_objects.get(uid, None)
             if xpath is not None:
                 event['xpath'] = xpath
 
