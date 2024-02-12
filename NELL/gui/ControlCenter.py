@@ -4,8 +4,6 @@ from NELL.gui.GuiUtils import GuiUtils as gui
 
 
 class ControlCenter:
-    global openai_key_input
-    openai_key_input = None
 
     def __init__(self):
         os.environ["OPENAI_API_KEY"] = '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'

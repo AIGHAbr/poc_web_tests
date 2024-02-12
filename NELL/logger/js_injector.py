@@ -27,16 +27,19 @@ js = """
         if (element === document.body) return '/html/body';
         if (element.id !== '') return `//*[@id="${element.id}"]`;
 
-        let linkElement = element.closest('a'); 
-        if (linkElement && !isRecursive) { 
-            let href = linkElement.getAttribute('href');
-            if (href) {
-                return `${findXPath(linkElement.parentNode, true)}//a[@href="${href}"]`;
+        if (!isRecursive) {
+            let linkElement = element.closest('a');
+            if (linkElement) {
+                let href = linkElement.getAttribute('href');
+                if (href) {
+                    // Constrói e retorna o XPath para o primeiro <a> com o href específico
+                    return `//a[@href="${href}"]`;
+                }
             }
         }
 
         if (!isRecursive) {
-            let selectors = ['span', 'b', 'p', 'h1', 'h2', 'h3', 'label', 'input', 'button', 'img', 'div', 'section'];
+            let selectors = ['span', 'b', 'a', 'p', 'h1', 'h2', 'h3', 'label', 'input', 'button', 'img', 'div', 'section'];
             for (let selector of selectors) {
                 const child = element.querySelector(selector);
                 if (child) {
@@ -56,9 +59,9 @@ js = """
             if (sibling === element) break;
             if (sibling.nodeType === 1 && sibling.tagName === element.tagName) position++;
         }
-
         return `${findXPath(element.parentNode, true)}/${element.tagName.toLowerCase()}[${position}]`;
     }
+
 
         
     function setUpEventListeners() {
@@ -75,8 +78,15 @@ js = """
             }
 
             let uid = element.getAttribute('uid'); 
-            if(uid) log['widget_id'] = uid;
-            else log['xpath'] = findXPath(element);
+            if(uid) {
+                log['widget_id'] = uid;
+                sendLogToServer(log);
+                return;
+            }
+            log['xpath'] = findXPath(element);
+            if(log['xpath'].startsWith("//a[")) 
+                log['tagName'] = 'a';
+
             sendLogToServer(log);
             
         });

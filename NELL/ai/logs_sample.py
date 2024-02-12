@@ -1,4 +1,4 @@
-sample = """
+sample01 = """
 67. {'info': 'page loaded', 'url': 'https://life.stg.wellzesta.com/cacau-caregivers-united/home', 'timestamp': '2024-02-07 02:28:56'}
 66. {'info': 'page loaded', 'url': 'https://life.stg.wellzesta.com/cacau-caregivers-united', 'timestamp': '2024-02-07 02:28:56'}
 65. {'event': 'sendkeys', 'tagName': 'input', 'alias': 'txt_pin', 'text': '1234', 'specialKey': 'Enter', 'timestamp': '2024-02-07 02:28:54', 'xpath': '//input[@id="pin"]'}
@@ -67,4 +67,28 @@ sample = """
 2. {'info': 'page loaded', 'url': 'https://life.stg.wellzesta.com/login', 'timestamp': '2024-02-07 02:28:12'}
 1. {'info': 'selenium framework', 'timestamp': '2024-02-07 02:28:12'}
 0. {'info': 'start log events', 'timestamp': '2024-02-07 02:28:12'}
+"""
+
+sample02 = """
+20. {'info': 'page loaded', 'url': 'https://active.stg.wellzesta.com/organizations/1/details', 'timestamp': '2024-02-11 22:05:37', 'page_id': 'Page_5'}
+19. {'event': 'click', 'tagName': 'a', 'xpath': '//a[@href="/organizations/1/details"]', 'timestamp': '2024-02-11 22:05:37'}
+18. {'info': 'page loaded', 'url': 'https://active.stg.wellzesta.com/organizations/1/events', 'timestamp': '2024-02-11 22:05:24', 'page_id': 'Page_4'}
+17. {'info': 'page loaded', 'url': 'https://active.stg.wellzesta.com/organizations/1', 'timestamp': '2024-02-11 22:05:23', 'page_id': 'Page_3'}
+16. {'event': 'click', 'tagName': 'a', 'xpath': '//a[@href="/organizations/1"]', 'timestamp': '2024-02-11 22:05:23'}
+15. {'info': 'page loaded', 'url': 'https://active.stg.wellzesta.com/organizations', 'timestamp': '2024-02-11 22:05:12', 'page_id': 'Page_2'}
+14. {'change': 'html attribute addition', 'tagName': 'button', 'attribute': 'disabled', 'value': '', 'xpath': '//button[contains(text(), "Sign In")]', 'timestamp': '2024-02-11 22:05:10'}
+13. {'change': 'html attribute', 'tagName': 'input', 'attribute': 'value', 'value_from': '', 'value_to': '12345678', 'xpath': '//input[@name="password" and @placeholder="Type your password"]', 'timestamp': '2024-02-11 22:05:10'}
+12. {'info': 'page src snapshot', 'id': 'snapshot_3', 'timestamp': '2024-02-11 22:05:10'}
+11. {'event': 'sendkeys', 'tagName': 'input', 'text': '12345678', 'specialKey': 'Enter', 'widget_id': 'Page_1:input:txt_password', 'timestamp': '2024-02-11 22:05:10'}
+10. {'change': 'html class', 'tagName': 'div', 'attribute': 'class', 'added': ['keyboard-nav'], 'removed': [], 'xpath': '//div[contains(@class, "stn-wdgt")]', 'timestamp': '2024-02-11 22:05:06'}
+9. {'change': 'html class', 'tagName': 'input', 'attribute': 'class', 'added': ['fmEuQH'], 'removed': ['edxvEk'], 'xpath': '//input[@name="password" and @placeholder="Type your password"]', 'timestamp': '2024-02-11 22:05:06'}
+8. {'change': 'html attribute', 'tagName': 'input', 'attribute': 'value', 'value_from': '', 'value_to': 'anelisedaux@gmail.com', 'xpath': '//input[@name="email" and @placeholder="Type your e-mail"]', 'timestamp': '2024-02-11 22:05:06'}
+7. {'change': 'html class', 'tagName': 'input', 'attribute': 'class', 'added': ['edxvEk'], 'removed': ['fmEuQH'], 'xpath': '//input[@name="email" and @placeholder="Type your e-mail"]', 'timestamp': '2024-02-11 22:05:06'}
+6. {'info': 'page src snapshot', 'id': 'snapshot_2', 'timestamp': '2024-02-11 22:05:06'}
+5. {'event': 'sendkeys', 'tagName': 'input', 'text': 'anelisedaux@gmail.com', 'specialKey': 'Tab', 'widget_id': 'Page_1:input:txt_email', 'timestamp': '2024-02-11 22:05:06'}
+4. {'info': 'page src snapshot', 'id': 'snapshot_1', 'timestamp': '2024-02-11 22:04:55'}
+3. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_1:input:txt_email', 'timestamp': '2024-02-11 22:04:55'}
+2. {'info': 'page loaded', 'url': 'https://active.stg.wellzesta.com/wz-login', 'timestamp': '2024-02-11 22:04:51', 'page_id': 'Page_1'}
+1. {'info': 'selenium framework', 'timestamp': '2024-02-11 22:04:50'}
+0. {'info': 'start log events', 'timestamp': '2024-02-11 22:04:50'}
 """
