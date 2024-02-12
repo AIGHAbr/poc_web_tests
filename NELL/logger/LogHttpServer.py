@@ -24,6 +24,9 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             log_data = json.loads(post_data.decode('utf-8'))
 
+            if not isinstance(log_data, list):
+                log_data = [log_data]
+
             for entry in log_data:
                 Logger.log_event(entry)
 

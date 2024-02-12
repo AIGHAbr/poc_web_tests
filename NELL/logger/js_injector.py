@@ -15,25 +15,51 @@ js = """
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(logs),
+            body: JSON.stringify(logData),
             mode: 'no-cors'
         }).catch(error => {
             console.error('Error sending logs:', error);
         });
     }
 
-    function findXPath(element) {
-        if (element.id !== '')  return 'id("${element.id}")';        
-        if (element === document.body)  return '/html/' + element.tagName.toLowerCase();
-        var ix = 0;
-        var siblings = element.parentNode.childNodes;
-        for (var i = 0; i < siblings.length; i++) {
-            var sibling = siblings[i];
-            if (sibling === element) 
-                return findXPath(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
-            if (sibling.nodeType === 1 && sibling.tagName === element.tagName) ix++;
+    
+    function findXPath(element, isRecursive = false) {
+        if (element === document.body) return '/html/body';
+        if (element.id !== '') return `//*[@id="${element.id}"]`;
+
+        let linkElement = element.closest('a'); 
+        if (linkElement && !isRecursive) { 
+            let href = linkElement.getAttribute('href');
+            if (href) {
+                return `${findXPath(linkElement.parentNode, true)}//a[@href="${href}"]`;
+            }
         }
+
+        if (!isRecursive) {
+            let selectors = ['span', 'b', 'p', 'h1', 'h2', 'h3', 'label', 'input', 'button', 'img', 'div', 'section'];
+            for (let selector of selectors) {
+                const child = element.querySelector(selector);
+                if (child) {
+                    let attribute = '';
+                    const text = child.textContent.trim();
+                    if (text) attribute = `contains(text(), "${text}")`;
+                    if (attribute) {
+                        return `${findXPath(element.parentNode, true)}//${selector}[${attribute}]`;
+                    }
+                }
+            }
+        }
+
+        let position = 1;
+        let siblings = element.parentNode.children;
+        for (let sibling of siblings) {
+            if (sibling === element) break;
+            if (sibling.nodeType === 1 && sibling.tagName === element.tagName) position++;
+        }
+
+        return `${findXPath(element.parentNode, true)}/${element.tagName.toLowerCase()}[${position}]`;
     }
+
         
     function setUpEventListeners() {
     
@@ -43,15 +69,13 @@ js = """
             }
             let element = event.target;
             let tagName = element.tagName.toLowerCase();
-            
-            let detail = tagName === 'button' ? 'text: ' + element.innerText : 'value: ' + element.value;     
-            log = {
+            let log = {
                 event: 'click', 
                 tagName: tagName
             }
 
             let uid = element.getAttribute('uid'); 
-            if(uid==None) log['widget_id'] = uid;
+            if(uid) log['widget_id'] = uid;
             else log['xpath'] = findXPath(element);
             sendLogToServer(log);
             
@@ -63,7 +87,7 @@ js = """
                 let element = event.target;
                 let tagName = element.tagName.toLowerCase();
                 
-                 log = {
+                let log = {
                     event: 'sendkeys', 
                     tagName: tagName, 
                     text: element.value,
@@ -71,7 +95,7 @@ js = """
                 }
                 
                 let uid = element.getAttribute('uid'); 
-                if(uid==None) log['widget_id'] = uid;
+                if(uid) log['widget_id'] = uid;
                 else log['xpath'] = findXPath(element);
                 sendLogToServer(log);
                 
