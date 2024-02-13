@@ -27,17 +27,17 @@ class GuiUtils:
         def toggle_visibility():
             if btn_show_hide.description == 'x':
                 btn_show_hide.description = '+'
-                controller.hideWidget()
+                controller.hide_widget()
                 return
 
             btn_show_hide.description = 'x'
-            controller.showWidget()
+            controller.show_widget()
 
         btn_show_hide.on_click(toggle_visibility)
         result = widgets.VBox([btn_show_hide, cell_box])
 
         if not visible:
-            controller.hideWidget()
+            controller.hide_widget()
             btn_show_hide.description = '+'
 
         return result

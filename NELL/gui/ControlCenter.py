@@ -1,19 +1,19 @@
 import os
 import ipywidgets as widgets
-from NELL.gui.GuiUtils import GuiUtils as gui
+from NELL.gui.GuiUtils import GuiUtils as Gui
 
 
 class ControlCenter:
 
     def __init__(self):
-        os.environ["OPENAI_API_KEY"] = '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'
+        os.environ["OPENAI_API_KEY"] = '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'
 
-        self.url_input = gui.new_textfield(
+        self.url_input = Gui.new_textfield(
             'Base URL:',
             'https://active.stg.wellzesta.com/'
         )
 
-        self.test_name_input = gui.new_textfield(
+        self.test_name_input = Gui.new_textfield(
             'Test Name:',
             'Wellzesta Valid Login Test'
         )

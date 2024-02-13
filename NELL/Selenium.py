@@ -181,7 +181,7 @@ class Selenium:
 
     def read_page_objects_metadata(self):
 
-        html = self.driver.page_source.encode("utf-8")
+        html = self.driver.page_source
         display(html)
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
@@ -260,3 +260,8 @@ def get_global_selectors():
     try: len(selectors)
     except: selectors = {}
     return selectors
+
+def instrument_webpage(page_id, selenium, window):
+    selenium.execute_script("window.hasEventListeners=false;")
+    selenium.instrument_webpage(window, page_id)
+    return selenium.current_url()

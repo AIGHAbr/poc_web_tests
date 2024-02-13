@@ -1,15 +1,17 @@
 import asyncio
 import threading
 import ipywidgets as widgets
-
+from IPython.display import clear_output
+from NELL.Selenium import Selenium, instrument_webpage
 from NELL.ai.ai_utils import generate_robot
 from NELL.logger.LogHttpServer import Logger
-from NELL.gui.GuiUtils import GuiUtils as gui
+from NELL.gui.GuiUtils import GuiUtils as Gui
 from NELL.gui.ControlCenter import ControlCenter
 from NELL.gui.QualityAssurance import QualityAssurance
 
-class Tabs():
-    
+
+class Tabs:
+
     def __init__(self):
 
         height = '600px'
@@ -17,22 +19,23 @@ class Tabs():
         self.content = widgets.Tab()
         self.tab_qa = QualityAssurance()
         self.control_center = ControlCenter()
-        self.tabs_control = gui.new_cell(self.control_center.content, width='98%', height=height, border='0px solid white')
+        self.tabs_control = Gui.new_cell(self.control_center.content, width='98%', height=height,
+                                         border='0px solid white')
         self.htmlLogs = widgets.HTML()
-        self.tab_event_logs = gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
+        self.tab_event_logs = Gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
 
         self.txt_robot01 = widgets.Textarea(
             layout=widgets.Layout(
-                width='49%', 
-                height='564px',  
+                width='49%',
+                height='564px',
                 overflow='auto'
             )
         )
 
         self.txt_robot02 = widgets.Textarea(
             layout=widgets.Layout(
-                width='49%', 
-                height='564px',  
+                width='49%',
+                height='564px',
                 overflow='auto'
             )
         )
@@ -41,15 +44,14 @@ class Tabs():
         self.btn_robot = widgets.Button(description='Run AI', button_style='info')
         self.tab_robot = widgets.VBox([self.btn_robot, self.txt_robot])
         self.btn_robot.on_click(lambda _: self.on_click_ai())
-        
 
         self.content.children = [
             self.tabs_control,
-            self.tab_event_logs, 
-            gui.new_cell(self.tab_qa.content, width='98%', height=height, border='0px solid white'), 
-            self.tab_robot 
+            self.tab_event_logs,
+            Gui.new_cell(self.tab_qa.content, width='98%', height=height, border='0px solid white'),
+            self.tab_robot
         ]
-        
+
         self.content.set_title(0, 'Configuration')
         self.content.set_title(1, 'Event Journal')
         self.content.set_title(2, 'Quality Assurance')
@@ -58,12 +60,22 @@ class Tabs():
         self.last_log_sent = None
 
         Logger.add_event_logger_listener(
-            lambda event, events: self.log_event(event, events))
+            lambda event, events: self.log_event(events))
         
-        self.tab_robot.disabled = True
+        self.content.observe(self.on_tab_selected, names='selected_index')
+
+        # self.tab_robot.disabled = True
+
+    def on_tab_selected(self, change):
+        if change['new'] != 2: return
+        instrument_webpage(Logger.current_page_id(), 
+                           Selenium.instance(), 
+                           self.window)
+        clear_output()
+        self.window.redraw()
 
 
-    def log_event(self, event, events):
+    def log_event(self, events):
         event_list = []
         size = len(events)
         for i, evt in enumerate(reversed(events), start=1):
@@ -72,6 +84,7 @@ class Tabs():
 
         self.htmlLogs.value = "<br/>\n".join(event_list)
 
+
     def on_click_ai(self):
 
         if self.animating:
@@ -79,20 +92,19 @@ class Tabs():
             self.txt_robot02.value = "Idem!\n" + self.txt_robot02.value
             return
 
-        if len(Logger.all_events())<3:
+        if len(Logger.all_events()) < 3:
             self.txt_robot01.value = "Not enough logs to generate scripts!\n" + self.txt_robot01.value
             self.txt_robot02.value = "Idem!\n" + self.txt_robot02.value
             return
 
         current_logs = self.htmlLogs.value
-        try: 
+        try:
             if current_logs == self.last_log_sent: return
         except AttributeError:
             self.last_log_sent = current_logs
 
         self.start_running_feedback()
         threading.Thread(target=self.generate_scripts, args=(current_logs,), daemon=True).start()
-
 
     def generate_scripts(self, logs):
         robot_script = None
@@ -101,7 +113,7 @@ class Tabs():
             print(robot_script)
 
         except Exception as ex:
-            self.txt_robot01.value = ex.error
+            self.txt_robot01.value = ex.__cause__
             self.txt_robot02.value = ""
             self.animating = False
             self.txt_robot.disabled = False
@@ -115,15 +127,17 @@ class Tabs():
             async def async_update_ui():
                 try:
                     scripts = robot_script.split('<inicio testsuit.robot>')
-                    if len(scripts) == 1 or len(scripts) >2:
+                    if len(scripts) == 1 or len(scripts) > 2:
                         scripts = robot_script.split('===')
 
-                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>", "").replace("===", "")
-                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'", "").replace("===", "")
-                    
+                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>",
+                                                                                          "").replace("===", "")
+                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'",
+                                                                                        "").replace("===", "")
+
                     self.txt_robot01.value = '*** Keywords.Resources ***\n\n' + script1.lstrip()
                     self.txt_robot02.value = '*** TestSuit.Robot ***\n\n' + script2.lstrip()
-                    
+
                 except:
                     self.txt_robot01.value = robot_script
                     self.txt_robot02.value = ''
@@ -135,12 +149,11 @@ class Tabs():
 
         update_ui()
 
-
     async def animate_button(self, interval=0.5):
         self.animating = True
-        animations = ['Running', '.Running.', '..Running..', '...Running...', 
+        animations = ['Running', '.Running.', '..Running..', '...Running...',
                       '....Running....', '...Running...', '..Running..', '.Running.']
-        while self.animating: 
+        while self.animating:
             for anim in animations:
                 if not self.animating: break
                 self.btn_robot.description = anim
@@ -150,12 +163,10 @@ class Tabs():
         self.btn_robot.disabled = False
         self.txt_robot.disabled = False
 
-
     def start_running_feedback(self):
         self.txt_robot.disabled = True
         self.btn_robot.disabled = True
         asyncio.create_task(self.animate_button(0.2))
-
 
     def stop_running_feedback(self):
         self.animating = False
@@ -163,7 +174,6 @@ class Tabs():
         if loop.is_running():
             asyncio.run_coroutine_threadsafe(self.update_button(), loop)
             return
-
 
     async def update_button(self):
         self.txt_robot.disabled = False

@@ -1,7 +1,6 @@
-import os
 import traceback
-import NELL.ai.roles as roles
 from openai import OpenAI
+import NELL.ai.roles as roles
 
 
 def generate_robot(logs):

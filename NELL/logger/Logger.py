@@ -78,7 +78,7 @@ class Logger:
         if url is not None:
             if event.get('info', None) == 'page loaded':
                 logger.page_counter = logger.page_counter + 1
-                event['page_id'] = f'Page_{logger.page_counter}'
+                event['page_id'] = logger.current_page_id()
                 try:
                     if url == logger.events[-1].get('url', None):
                         pass
@@ -96,6 +96,11 @@ class Logger:
 
         return event
 
+    @staticmethod
+    def current_page_id() :
+        if Logger.singleton == None:
+            Logger.singleton = Logger()
+        return f'Page_{Logger.singleton.page_counter}'
 
     @staticmethod
     def all_events():
