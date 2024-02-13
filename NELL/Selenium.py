@@ -207,7 +207,7 @@ class Selenium:
         if self.driver is None: return None
         return self.driver.current_url
 
-    def instrument_webpage(self, window, page_id=""):
+    def instrument_webpage(self, window, page_id, page_url):
 
         print(f"Instrumenting the webpage {page_id}")
 
@@ -251,7 +251,7 @@ class Selenium:
                 get_global_selectors()[uid] = selector
 
         rows_df = DataFrame(rows)
-        window.reload(df=rows_df)
+        window.reload(page_id, page_url, rows_df)
         self.execute_script(injector.js)
 
 # noinspection PyBroadException
@@ -261,7 +261,7 @@ def get_global_selectors():
     except: selectors = {}
     return selectors
 
-def instrument_webpage(page_id, selenium, window):
+def try_instrument_webpage(selenium, window, page_id, page_url):
     selenium.execute_script("window.hasEventListeners=false;")
-    selenium.instrument_webpage(window, page_id)
+    selenium.instrument_webpage(window, page_id, page_url)
     return selenium.current_url()

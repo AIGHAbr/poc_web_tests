@@ -1,8 +1,6 @@
 import asyncio
 import threading
 import ipywidgets as widgets
-from IPython.display import clear_output
-from NELL.Selenium import Selenium, instrument_webpage
 from NELL.ai.ai_utils import generate_robot
 from NELL.logger.LogHttpServer import Logger
 from NELL.gui.GuiUtils import GuiUtils as Gui
@@ -61,18 +59,6 @@ class Tabs:
 
         Logger.add_event_logger_listener(
             lambda event, events: self.log_event(events))
-        
-        self.content.observe(self.on_tab_selected, names='selected_index')
-
-        # self.tab_robot.disabled = True
-
-    def on_tab_selected(self, change):
-        if change['new'] != 2: return
-        instrument_webpage(Logger.current_page_id(), 
-                           Selenium.instance(), 
-                           self.window)
-        clear_output()
-        self.window.redraw()
 
 
     def log_event(self, events):

@@ -1,7 +1,7 @@
 import threading
 import time
 from IPython.display import clear_output
-from NELL.Selenium import Selenium, instrument_webpage
+from NELL.Selenium import Selenium, try_instrument_webpage
 from NELL.gui.Window import Window
 from NELL.logger.LogHttpServer import start_server
 from NELL.logger.Logger import Logger
@@ -51,7 +51,7 @@ class Main:
             self.window.redraw()
 
             event = Logger.log_event({'info': 'page loaded', 'url': self.selenium.current_url()})
-            self.current_url = instrument_webpage(event['page_id'], self.selenium, self.window)
+            self.current_url = try_instrument_webpage(self.selenium, self.window, event['page_id'], self.selenium.current_url())
             time.sleep(0.5)
 
     def can_instrument_now(self, same_url_again=False):

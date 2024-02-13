@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime as datetime
 
 class Logger:
 
@@ -66,7 +66,7 @@ class Logger:
         if logger.disabled: return event
 
         if event.get('timestamp', None) is None:
-            event['timestamp'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            event['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         uid = event.get('widget_id', None)
         if id is not None:

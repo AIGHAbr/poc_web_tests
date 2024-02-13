@@ -70,9 +70,8 @@ class Window:
             Logger.disable()
 
     def redraw(self):
-        clear_output()
+        # clear_output()
         display(self.content, display_id="Playground")
 
-    def reload(self, df=None):
-        if df is None: return
-        self.tabs.tab_qa.reload(df)
+    def reload(self, page_id, page_url, df):
+        self.tabs.tab_qa.reload(page_id, page_url, df)
