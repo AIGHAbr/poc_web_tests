@@ -73,5 +73,5 @@ class Window:
         # clear_output()
         display(self.content, display_id="Playground")
 
-    def reload(self, page_id, page_url, df):
-        self.tabs.tab_qa.reload(page_id, page_url, df)
+    def reload(self, page_id, page_url, df, html):
+        self.tabs.tab_qa.reload(page_id, page_url, df, html)

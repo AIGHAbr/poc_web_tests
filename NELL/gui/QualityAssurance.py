@@ -7,11 +7,11 @@ class QualityAssurance:
 
     def __init__(self):
         self.content = widgets.Tab([], layout=widgets.Layout(overflow='hidden', width='99%', height='99%'))
-        self.reload(None, None, None)
+        self.reload(None, None, None, None)
         self.pages = {}
 
 
-    def try_fire_web_event(self, page_url, uid, locator, data, attributes):
+    def try_fire_web_event(self, page_url, uid, locator, data, attributes, footer):
         Selenium.instance().highlight_element(locator)
         options = []
         for key, value in data.items():
@@ -27,18 +27,18 @@ class QualityAssurance:
 
         attributes.children = [widgets.VBox([radios])]
         radios.observe(lambda change:
-                       self.attribute_selected(page_url, uid, locator, change.new, data[change.new]), names='value')
-        self.attribute_selected(page_url, uid, locator, options[0], data[options[0]])
+                       self.attribute_selected(page_url, uid, locator, change.new, data[change.new], footer), names='value')
+        self.attribute_selected(page_url, uid, locator, options[0], data[options[0]],footer)
 
 
-    def attribute_selected(self, page_url, uid, locator, att_name, att_value):
+    def attribute_selected(self, page_url, uid, locator, att_name, att_value, footer):
 
         html_widget = widgets.HTML(
             value=f"""<br/>
                 <b>Page Url:</b> {page_url}<br/>
                 <b>Locator:</b> {locator}<br/>
                 <b>Attribute:</b> {att_name}<br/>
-                <div style='background-color: #fff9c4; padding: 10px; width: 350px;'>
+                <div style='background-color: #fff9c4; padding: 10px; width: 330px;'>
                     <b>Attribute Value:</b><br/>{att_value}
                 </div>
             """
@@ -51,8 +51,8 @@ class QualityAssurance:
 
         btn = widgets.Button(description='Store Attribute Value', icon='save', layout=widgets.Layout(width='200px'))
         btn.on_click(lambda b: self.log_attribute_data(memo, uid, locator, att_name, att_value))
+        footer.children = [html_widget, memo, btn]
 
-        self.footer.children = [html_widget, memo, btn]
 
     def log_attribute_data(self, memo, uid, locator, att_name, att_value):
         Logger.log_event({'qa': memo.value,
@@ -63,7 +63,7 @@ class QualityAssurance:
                           })
 
 
-    def reload(self, page_id, page_url, df):
+    def reload(self, page_id, page_url, df, html_src):
         if page_id is not None:
             for pid in self.content.children:
                 if pid.title == page_id:
@@ -79,12 +79,14 @@ class QualityAssurance:
             self.content.set_title(i, f"{page_id}")  
             return
 
-        tab = widgets.VBox([], layout=widgets.Layout(overflow='auto', width='98%'))
-        
-        self.redraw_tab(page_url, tab, df)
+        page_ojects = widgets.VBox([], layout=widgets.Layout(overflow='hidden', width='500px', height='100%'))
+        html = widgets.Textarea(html_src, layout=widgets.Layout(overflow='hidden', height='98%', width='80%', disabled=True))
+        tab = widgets.HBox([page_ojects, html], layout=widgets.Layout(overflow='hidden', width='98%', height='100%')) 
+        all = widgets.VBox([widgets.HTML(f"<div>{page_url}</div>"), tab], layout=widgets.Layout(overflow='hidden', width='98%', height='100%'))
+        self.redraw_tab(page_url, page_ojects, df)
         tab.title = page_id
         i = len(self.content.children)
-        self.content.children += (tab,)
+        self.content.children += (all,)
         self.content.set_title(i, f"{page_id}")  
 
 
@@ -92,6 +94,7 @@ class QualityAssurance:
             lines = len(df)
             grid = widgets.GridspecLayout(lines, 2, layout=widgets.Layout(width='300px', overflow='auto'))
             attributes = widgets.VBox(layout=widgets.Layout(overflow='auto'))
+            footer = widgets.VBox(layout=widgets.Layout(overflow='auto'))
 
             for i, (index, row) in enumerate(df.iterrows()):
                 key = row["Key"]
@@ -101,14 +104,12 @@ class QualityAssurance:
 
                 pnl = widgets.Button(tooltip=locator, icon='search', layout=widgets.Layout(width='50px', height='30px'))
 
-                pnl.on_click(lambda b: self.try_fire_web_event(page_url, uid, str(locator), data, attributes))
+                pnl.on_click(lambda b: self.try_fire_web_event(page_url, uid, str(locator), data, attributes, footer))
                 grid[i, 1] = pnl
                 grid[i, 0] = widgets.HTML(f"<div style='background-color: white; width: 220px;'>{key}</div>")
 
                 Logger.add_page_object(uid, locator)
 
-            footer = widgets.VBox(layout=widgets.Layout(overflow='auto'))
-
             page_objects = widgets.VBox([grid, widgets.HTML()])
             elements = widgets.HBox([page_objects, attributes], layout=widgets.Layout(overflow='hidden'))
-            tab.children = [widgets.HTML(f"<div>{page_url}</div>"), elements, footer, widgets.HTML()]
+            tab.children = [elements, footer, widgets.HTML()]

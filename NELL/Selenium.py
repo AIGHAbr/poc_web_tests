@@ -182,7 +182,6 @@ class Selenium:
     def read_page_objects_metadata(self):
 
         html = self.driver.page_source
-        display(html)
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
 
@@ -201,7 +200,7 @@ class Selenium:
                 "text": element.get_text(strip=True),
                 "visibility": "visible" if element.get('type') != 'hidden' else "invisible"
             })
-        return result
+        return result, soup.prettify()
 
     def current_url(self):
         if self.driver is None: return None
@@ -209,14 +208,12 @@ class Selenium:
 
     def instrument_webpage(self, window, page_id, page_url):
 
-        print(f"Instrumenting the webpage {page_id}")
-
         if self.last_page_id == page_id: return
         self.last_page_id = page_id
 
         rows = []
-        metadata = self.read_page_objects_metadata()
-        display(f"Metadata: {metadata}")
+        metadata, html = self.read_page_objects_metadata()
+
 
         for tag_name, elements in metadata.items():
             for element in elements:
@@ -251,7 +248,7 @@ class Selenium:
                 get_global_selectors()[uid] = selector
 
         rows_df = DataFrame(rows)
-        window.reload(page_id, page_url, rows_df)
+        window.reload(page_id, page_url, rows_df, html)
         self.execute_script(injector.js)
 
 # noinspection PyBroadException
