@@ -87,6 +87,8 @@ class Window:
 
 
     def redraw(self):
+        global win
+        win = self
         clear_output()
         display(self.content, display_id="Playground")
 

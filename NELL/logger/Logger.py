@@ -61,39 +61,45 @@ class Logger:
 
     @staticmethod
     def log_event(event, reset=False):
-        logger = Logger.singleton
-        if reset: logger.reset_logs()
-        if event is None: return event
+        try:
+            logger = Logger.singleton
+            if reset: logger.reset_logs()
+            if event is None: return event
 
-        if event.get('timestamp', None) is None:
-            event['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            if event.get('timestamp', None) is None:
+                event['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        uid = event.get('widget_id', None)
-        if id is not None:
-            xpath = logger.page_objects.get(uid, None)
-            if xpath is not None:
-                event['xpath'] = xpath
+            uid = event.get('widget_id', None)
+            if id is not None:
+                xpath = logger.page_objects.get(uid, None)
+                if xpath is not None:
+                    event['xpath'] = xpath
 
-        if logger.disabled: 
+            if logger.disabled: 
+                return event
+
+            sevent = str(event)
+            url = event.get('url', None)
+            if url is not None:
+                if event.get('info', None) == 'page loaded':
+                    event['window_handle'] = window_handle(Selenium.instance())
+                    if sevent not in logger.logged_events:
+                        logger.page_counter = logger.page_counter + 1
+                    event['page_id'] = logger.current_page_id()
+
+            if sevent in logger.logged_events: return event
+            logger.logged_events.add(sevent)
+            logger.events.append(event)
+
+            for listener in logger.log_event_listeners:
+                listener(event, logger.events)
+
             return event
-
-        sevent = str(event)
-        url = event.get('url', None)
-        if url is not None:
-            if event.get('info', None) == 'page loaded':
-                event['window_handle'] = window_handle(Selenium.instance())
-                if sevent not in logger.logged_events:
-                    logger.page_counter = logger.page_counter + 1
-                event['page_id'] = logger.current_page_id()
-
-        if sevent in logger.logged_events: return event
-        logger.logged_events.add(sevent)
-        logger.events.append(event)
-
-        for listener in logger.log_event_listeners:
-            listener(event, logger.events)
-
-        return event
+        finally:
+            try:
+                global win
+                win.redraw()
+            except: pass
 
 
     @staticmethod

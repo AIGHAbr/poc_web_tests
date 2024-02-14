@@ -24,18 +24,26 @@ js = """
 
     
     function findXPath(element, isRecursive = false) {
-    
         if (element === document.body) return '/html/body';
         if (element.id !== '') return `//*[@id="${element.id}"]`;
+
+        const attributes = ['id', 'name', 'placeholder', 'aria-label', 'data-test-id', 'alt'];
+        let attributeConditions = [];
+
+        for (let attr of attributes) {
+            const value = element.getAttribute(attr);
+            if (value) attributeConditions.push(`@${attr}="${value}"`);
+        }
+
+        if (!isRecursive && attributeConditions.length > 0) 
+            return `//${element.tagName.toLowerCase()}[${attributeConditions.join(' and ')}]`;
+        
 
         if (!isRecursive) {
             let linkElement = element.closest('a');
             if (linkElement) {
                 let href = linkElement.getAttribute('href');
-                if (href) {
-                    // Constrói e retorna o XPath para o primeiro <a> com o href específico
-                    return `//a[@href="${href}"]`;
-                }
+                if (href) return `//a[@href="${href}"]`;    
             }
         }
 
@@ -43,14 +51,8 @@ js = """
             let selectors = ['span', 'b', 'a', 'p', 'h1', 'h2', 'h3', 'label', 'input', 'button', 'img', 'div', 'section'];
             for (let selector of selectors) {
                 const child = element.querySelector(selector);
-                if (child) {
-                    let attribute = '';
-                    const text = child.textContent.trim();
-                    if (text) attribute = `contains(text(), "${text}")`;
-                    if (attribute) {
-                        return `${findXPath(element.parentNode, true)}//${selector}[${attribute}]`;
-                    }
-                }
+                if (child) return `${findXPath(element.parentNode, true)}//${selector}`;
+                
             }
         }
 
@@ -62,6 +64,7 @@ js = """
         }
         return `${findXPath(element.parentNode, true)}/${element.tagName.toLowerCase()}[${position}]`;
     }
+
         
     function setUpEventListeners() {
     

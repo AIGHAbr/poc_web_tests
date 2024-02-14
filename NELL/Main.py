@@ -14,6 +14,7 @@ class Main:
 
         global win
         win = self.window
+        
         self.window.handles = set()
         
         self.pageCounter = 0
