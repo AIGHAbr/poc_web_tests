@@ -1,4 +1,5 @@
 import json
+import logging
 import http.server
 import socketserver
 import traceback
@@ -7,9 +8,12 @@ from NELL.logger.Logger import Logger
 
 class LogHttpServer(socketserver.TCPServer):
     allow_reuse_address = True
+    log = logging.getLogger()
+    log.setLevel(logging.ERROR)
 
 
 class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
+
 
     def do_OPTIONS(self):
         self.send_response(200, "OK")
@@ -28,7 +32,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
                 log_data = [log_data]
 
             for entry in log_data:
-                Logger.log_event(entry)
+                Logger.log_event(entry)            
 
             self.send_response(200)
             self.send_header('Access-Control-Allow-Origin', '*')

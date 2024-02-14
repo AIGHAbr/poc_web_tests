@@ -24,6 +24,7 @@ js = """
 
     
     function findXPath(element, isRecursive = false) {
+    
         if (element === document.body) return '/html/body';
         if (element.id !== '') return `//*[@id="${element.id}"]`;
 
@@ -61,8 +62,6 @@ js = """
         }
         return `${findXPath(element.parentNode, true)}/${element.tagName.toLowerCase()}[${position}]`;
     }
-
-
         
     function setUpEventListeners() {
     

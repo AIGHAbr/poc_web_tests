@@ -1,5 +1,5 @@
 import ipywidgets as widgets
-from IPython.display import display
+from IPython.display import display, clear_output
 from NELL.Readme import readme
 from NELL.Selenium import Selenium
 from NELL.gui.QualityAssurance import QualityAssurance
@@ -87,8 +87,9 @@ class Window:
 
 
     def redraw(self):
+        clear_output()
         display(self.content, display_id="Playground")
 
 
-    def reload(self, page_id, page_url, df, html):
-        self.tabs.reload(page_id, page_url, df, html)
+    def reload(self, page_id, df, html):
+        self.tabs.reload(page_id, df, html)

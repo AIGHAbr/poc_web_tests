@@ -63,8 +63,8 @@ class Tabs:
         self.content.set_title(3, 'Robot Framework')
 
 
-    def reload(self, page_id, page_url, df, html_src):
-        self.qa.reload(page_id, page_url, df, html_src)
+    def reload(self, page_id, df, html_src):
+        self.qa.reload(page_id, df, html_src)
 
 
     def log_event(self, events):

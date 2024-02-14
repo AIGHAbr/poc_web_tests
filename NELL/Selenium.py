@@ -10,7 +10,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import NELL.logger.js_injector as injector
-from IPython.display import display
 
 
 class Selenium:
@@ -192,7 +191,6 @@ class Selenium:
             lambda driver: driver.execute_script("return document.readyState") == "complete"
         )
 
-        print(self.driver.current_url)
         html = self.driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
@@ -218,7 +216,7 @@ class Selenium:
         if self.driver is None: return None
         return self.driver.current_url
 
-    def instrument_webpage(self, window, page_id, page_url):
+    def instrument_webpage(self, window, page_id):
 
         if self.last_page_id == page_id: return
         self.last_page_id = page_id
@@ -259,8 +257,9 @@ class Selenium:
                 get_global_selectors()[uid] = selector
 
         rows_df = DataFrame(rows)
-        window.reload(page_id, page_url, rows_df, html)
+        window.reload(page_id, rows_df, html)
         self.execute_script(injector.js)
+
 
 # noinspection PyBroadException
 def get_global_selectors():
@@ -269,7 +268,17 @@ def get_global_selectors():
     except: selectors = {}
     return selectors
 
-def try_instrument_webpage(selenium, window, page_id, page_url):
+
+def window_handle(selenium):
+    try:
+        handle = selenium.execute_script("return window.window_handle;")
+        if handle is None: raise Exception   
+    except:
+        handle = selenium.driver.current_window_handle
+        selenium.execute_script(f"window.window_handle='{handle}'")
+    return handle
+
+
+def try_instrument_webpage(selenium, window, page_id):
     selenium.execute_script("window.hasEventListeners=false;")
-    selenium.instrument_webpage(window, page_id, page_url)
-    return page_url
+    selenium.instrument_webpage(window, page_id)
