@@ -12,15 +12,13 @@ class Tabs:
 
     def __init__(self):
 
-        height = '600px'
+        self.height = '600px'
         self.animating = False
         self.content = widgets.Tab()
-        self.tab_qa = QualityAssurance()
         self.control_center = ControlCenter()
-        self.tabs_control = Gui.new_cell(self.control_center.content, width='98%', height=height,
-                                         border='0px solid white')
+        self.tabs_control = Gui.new_cell(self.control_center.content, width='98%', height=self.height)
         self.htmlLogs = widgets.HTML()
-        self.tab_event_logs = Gui.new_cell(self.htmlLogs, width='98%', height=height, scroll=True)
+        self.tab_event_logs = Gui.new_cell(self.htmlLogs, width='98%', height=self.height, scroll=True)
 
         self.txt_robot01 = widgets.Textarea(
             layout=widgets.Layout(
@@ -43,10 +41,19 @@ class Tabs:
         self.tab_robot = widgets.VBox([self.btn_robot, self.txt_robot])
         self.btn_robot.on_click(lambda _: self.on_click_ai())
 
+        self.reset_qa()
+        self.last_log_sent = None
+
+        Logger.add_event_logger_listener(
+            lambda event, events: self.log_event(events))
+
+
+    def reset_qa(self):
+        self.qa = QualityAssurance()
         self.content.children = [
             self.tabs_control,
             self.tab_event_logs,
-            Gui.new_cell(self.tab_qa.content, width='98%', height=height, border='0px solid white'),
+            Gui.new_cell(self.qa.content, width='98%', height=self.height),
             self.tab_robot
         ]
 
@@ -55,10 +62,9 @@ class Tabs:
         self.content.set_title(2, 'Quality Assurance')
         self.content.set_title(3, 'Robot Framework')
 
-        self.last_log_sent = None
 
-        Logger.add_event_logger_listener(
-            lambda event, events: self.log_event(events))
+    def reload(self, page_id, page_url, df, html_src):
+        self.qa.reload(page_id, page_url, df, html_src)
 
 
     def log_event(self, events):

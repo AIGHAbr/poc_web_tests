@@ -13,7 +13,6 @@ class Snapshoter:
 
         self.snapshot_ids = {} 
         self.next_id = 1
-        self.selenium = Selenium.instance()
 
         self.logger = logger
         self.logger.add_event_logger_listener(
@@ -26,9 +25,9 @@ class Snapshoter:
         if evType == None: return
 
         self.last_url = self.current_url
-        self.current_url = self.selenium.current_url()
+        self.current_url = Selenium.instance().current_url()
 
-        html = self.selenium.driver.page_source.encode("utf-8")
+        html = Selenium.instance().driver.page_source.encode("utf-8")
         if self.last == None:
             self.last = html
             self.current = html

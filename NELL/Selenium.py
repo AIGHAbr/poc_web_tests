@@ -7,6 +7,7 @@ from pandas import DataFrame
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import NELL.logger.js_injector as injector
 from IPython.display import display
@@ -32,10 +33,16 @@ class Selenium:
         self.service = Service(ChromeDriverManager().install())
 
     def is_page_loaded(self):
-        return self.driver.execute_script("return document.readyState;") == "complete"
+        try:
+            return self.driver.execute_script("return document.readyState;") == "complete"
+        except:
+            return False
 
     def is_logging_instrumented(self):
-        return self.driver.execute_script("return window.hasEventListeners === true;")
+        try:
+            return self.driver.execute_script("return window.hasEventListeners === true;")
+        except:
+            return False
 
     def execute_script(self, script):
         try:
@@ -181,6 +188,11 @@ class Selenium:
 
     def read_page_objects_metadata(self):
 
+        WebDriverWait(self.driver, 10).until(
+            lambda driver: driver.execute_script("return document.readyState") == "complete"
+        )
+
+        print(self.driver.current_url)
         html = self.driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all(['input', 'button', 'a', 'img', 'svg'])
@@ -213,7 +225,6 @@ class Selenium:
 
         rows = []
         metadata, html = self.read_page_objects_metadata()
-
 
         for tag_name, elements in metadata.items():
             for element in elements:
@@ -261,4 +272,4 @@ def get_global_selectors():
 def try_instrument_webpage(selenium, window, page_id, page_url):
     selenium.execute_script("window.hasEventListeners=false;")
     selenium.instrument_webpage(window, page_id, page_url)
-    return selenium.current_url()
+    return page_url
