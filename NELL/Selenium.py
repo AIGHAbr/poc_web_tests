@@ -269,13 +269,13 @@ def get_global_selectors():
     return selectors
 
 
-def window_handle(selenium):
+def window_id(selenium):
     try:
-        handle = selenium.execute_script("return window.window_handle;")
+        handle = selenium.execute_script("return window.window_id;")
         if handle is None: raise Exception   
     except:
         handle = selenium.driver.current_window_handle
-        selenium.execute_script(f"window.window_handle='{handle}'")
+        selenium.execute_script(f"window.window_id='{handle}'")
     return handle
 
 

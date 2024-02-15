@@ -86,3 +86,42 @@ sample02 = """
 1. {'info': 'selenium framework', 'timestamp': '2024-02-11 23:02:51'}
 0. {'info': 'start log events', 'timestamp': '2024-02-11 23:02:51'}
 """
+
+sample03 = """
+17. {'event': 'sendkeys', 'tagName': 'input', 'text': 'Entrar', 'specialKey': 'Enter', 'widget_id': 'Page_2:input:txt_btnlogar', 'timestamp': '2024-02-14 07:07', 'xpath': '//input[@id="btnLogar"]'}
+16. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_txtcodetextbox', 'timestamp': '2024-02-14 07:07', 'xpath': '//input[@id="txtCodeTextBox"]'}
+15. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'style', 'value_from': 'background: rgb(247, 247, 247);', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+14. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'rightmargin', 'value_from': '0', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+13. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'scroll', 'value_from': 'no', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+12. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'topmargin', 'value_from': '0', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+11. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'leftmargin', 'value_from': '0', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+10. {'change': 'html attribute', 'tagName': 'body', 'attribute': 'bottommargin', 'value_from': '0', 'value_to': 'N/A', 'xpath': '//*[document]/html/body', 'timestamp': '2024-02-14 07:07'}
+9. {'info': 'page src snapshot', 'id': 'snapshot_2', 'timestamp': '2024-02-14 07:07:24'}
+8. {'event': 'sendkeys', 'tagName': 'input', 'text': 'f9N2yxBLYu-9', 'specialKey': 'Enter', 'widget_id': 'Page_2:input:txt_txtsenha', 'timestamp': '2024-02-14 07:07', 'xpath': '//input[@id="txtSenha"]'}
+7. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_txtsenha', 'timestamp': '2024-02-14 07:05', 'xpath': '//input[@id="txtSenha"]'}
+6. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/e-ISSHelp/Not%20Fiscal%20Not%20User/iss_help.htm', 'timestamp': '2024-02-14 07:05', 'window_handle': '03342F9B3C497176BF31D4D965DEFB77', 'page_id': 'Page_3'}
+5. {'info': 'page src snapshot', 'id': 'snapshot_1', 'timestamp': '2024-02-14 07:05:38'}
+4. {'event': 'sendkeys', 'tagName': 'input', 'text': 'nivel5', 'specialKey': 'Enter', 'widget_id': 'Page_2:input:txt_txtlogin', 'timestamp': '2024-02-14 07:05', 'xpath': '//input[@id="txtLogin"]'}
+3. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/iss/default.aspx', 'timestamp': '2024-02-14 07:05', 'window_handle': 'BCFD67368192A625C6455F6F9769A8A1', 'page_id': 'Page_2'}
+2. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/iss/Default.htm', 'timestamp': '2024-02-14 07:05', 'window_handle': 'AC0D419ABE883E0D20962806C496DC8D', 'page_id': 'Page_1'}
+1. {'info': 'selenium framework', 'timestamp': '2024-02-14 07:05'}
+0. {'info': 'start log events', 'timestamp': '2024-02-14 07:05'}
+"""
+
+sample04 = """
+14. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/iss/Principal/frmFramesPgPrincipal.aspx?sParam=MENSAGEM&sLogin=1', 'timestamp': '2024-02-14 19:10', 'window_id': '59DB363A44BFE40CFBAD7582B7FF8C9D', 'page_id': 'Page_3'}
+13. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_btnlogar', 'timestamp': '2024-02-14 19:10', 'xpath': '//input[@id="btnLogar"]'}
+12. {'change': 'html attribute addition', 'tagName': 'input', 'attribute': 'data-gtm-form-interact-field-id', 'value': '1', 'xpath': '//input[@id="txtSenha"]', 'timestamp': '2024-02-14 19:10'}
+11. {'info': 'page src snapshot', 'id': 'snapshot_3', 'timestamp': '2024-02-14 19:10:40'}
+10. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_txtcodetextbox', 'timestamp': '2024-02-14 19:10', 'xpath': '//input[@id="txtCodeTextBox"]'}
+9. {'change': 'html attribute addition', 'tagName': 'input', 'attribute': 'data-gtm-form-interact-field-id', 'value': '0', 'xpath': '//input[@id="txtLogin"]', 'timestamp': '2024-02-14 19:10'}
+8. {'change': 'html attribute addition', 'tagName': 'form', 'attribute': 'data-gtm-form-interact-id', 'value': '0', 'xpath': '//form[@id="frmLogin"]', 'timestamp': '2024-02-14 19:10'}
+7. {'info': 'page src snapshot', 'id': 'snapshot_2', 'timestamp': '2024-02-14 19:10:21'}
+6. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_txtsenha', 'timestamp': '2024-02-14 19:10', 'xpath': '//input[@id="txtSenha"]'}
+5. {'info': 'page src snapshot', 'id': 'snapshot_1', 'timestamp': '2024-02-14 19:09:35'}
+4. {'event': 'click', 'tagName': 'input', 'widget_id': 'Page_2:input:txt_txtlogin', 'timestamp': '2024-02-14 19:09', 'xpath': '//input[@id="txtLogin"]'}
+3. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/iss/default.aspx', 'timestamp': '2024-02-14 19:09', 'window_id': '59DB363A44BFE40CFBAD7582B7FF8C9D', 'page_id': 'Page_2'}
+2. {'info': 'page loaded', 'url': 'https://isscuritiba.curitiba.pr.gov.br/iss/Default.htm', 'timestamp': '2024-02-14 19:09', 'window_id': 'D6257BAC63E7801A8B4B0632E8F09576', 'page_id': 'Page_1'}
+1. {'info': 'selenium framework', 'timestamp': '2024-02-14 19:09'}
+0. {'info': 'start log events', 'timestamp': '2024-02-14 19:09'}
+"""

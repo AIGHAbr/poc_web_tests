@@ -1,7 +1,9 @@
 import threading
 import time
 from IPython.display import clear_output
-from NELL.Selenium import Selenium, try_instrument_webpage, window_handle
+
+from NELL.Selenium import Selenium, try_instrument_webpage
+from NELL.ai.ai_utils import get_open_ai_key
 from NELL.gui.Window import Window
 from NELL.logger.LogHttpServer import start_server
 from NELL.logger.Logger import Logger
@@ -10,6 +12,9 @@ from NELL.logger.Logger import Logger
 class Main:
 
     def __init__(self):
+
+        get_open_ai_key()
+
         self.window = Window()
 
         global win
@@ -73,13 +78,10 @@ class Main:
     def find_new_windows(self):
         selenium = Selenium.instance()
         if selenium.driver is None: return
-
         handles = selenium.driver.window_handles
-
         for handle in handles:
             if self.window.handles.__contains__(handle): continue
             if selenium.current_url() is None: continue
-
             selenium.driver.switch_to.window(handle)
             event = Logger.log_event({'info': 'page loaded', 'url': selenium.current_url()})
             try_instrument_webpage(Selenium.instance(), self.window, event['page_id'])

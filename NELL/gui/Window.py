@@ -2,7 +2,6 @@ import ipywidgets as widgets
 from IPython.display import display, clear_output
 from NELL.Readme import readme
 from NELL.Selenium import Selenium
-from NELL.gui.QualityAssurance import QualityAssurance
 from NELL.logger.Logger import Logger
 from NELL.gui.GuiUtils import GuiUtils as Gui
 from NELL.gui.Tabs import Tabs

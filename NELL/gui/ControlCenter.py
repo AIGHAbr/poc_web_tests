@@ -6,7 +6,6 @@ from NELL.gui.GuiUtils import GuiUtils as Gui
 class ControlCenter:
 
     def __init__(self):
-        os.environ["OPENAI_API_KEY"] = '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'
 
         self.url_input = Gui.new_textfield(
             'Base URL:',

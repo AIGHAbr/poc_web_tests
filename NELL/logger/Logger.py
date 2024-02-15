@@ -1,5 +1,5 @@
 from datetime import datetime as datetime
-from NELL.Selenium import Selenium, window_handle
+from NELL.Selenium import Selenium, window_id
 
 class Logger:
 
@@ -82,7 +82,7 @@ class Logger:
             url = event.get('url', None)
             if url is not None:
                 if event.get('info', None) == 'page loaded':
-                    event['window_handle'] = window_handle(Selenium.instance())
+                    event['window_id'] = window_id(Selenium.instance())
                     if sevent not in logger.logged_events:
                         logger.page_counter = logger.page_counter + 1
                     event['page_id'] = logger.current_page_id()
