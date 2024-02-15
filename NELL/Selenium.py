@@ -13,6 +13,7 @@ import NELL.logger.js_injector as injector
 
 
 class Selenium:
+
     instances = {}
 
     @staticmethod
@@ -20,6 +21,7 @@ class Selenium:
         if name not in Selenium.instances:
             Selenium.instances[name] = Selenium()
         return Selenium.instances[name]
+
 
     def __init__(self):
         self.driver = None
@@ -31,17 +33,20 @@ class Selenium:
         self.chrome_options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
         self.service = Service(ChromeDriverManager().install())
 
+
     def is_page_loaded(self):
         try:
             return self.driver.execute_script("return document.readyState;") == "complete"
         except:
             return False
 
+
     def is_logging_instrumented(self):
         try:
             return self.driver.execute_script("return window.hasEventListeners === true;")
         except:
             return False
+
 
     def execute_script(self, script):
         try:
@@ -50,6 +55,7 @@ class Selenium:
             print("Error while executing the script:", e)
             traceback.print_exc()
 
+
     def new_driver(self, url="https://www.youtube.com/watch?v=6Iti5-Zfpg4", restart=False):
         if restart: self.try_kill_driver()
         self.driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
@@ -57,12 +63,14 @@ class Selenium:
         while not self.is_page_loaded(): time.sleep(0.1)
         return self.driver
 
+
     # noinspection PyBroadException
     def try_kill_driver(self):
         try:
             self.driver.quit()
         except:
             self.driver = None
+
 
     def highlight_element(self, selector):
 
@@ -86,6 +94,7 @@ class Selenium:
         except Exception as e:
             traceback.print_exc()
             print("Error while highlighting the element:", e)
+
 
     def generate_key(self, tag, element, counter):
         base = {"input": "txt", "button": "btn", "a": "lnk", "img": "img", "svg": "svg"}

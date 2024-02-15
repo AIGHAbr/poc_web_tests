@@ -4,6 +4,27 @@ import http.server
 import socketserver
 import traceback
 from NELL.logger.Logger import Logger
+from NELL.logger.MimicControls import MimicControls
+
+
+class LoggerHolder():
+
+    singleton = None
+
+    @staticmethod
+    def get(logger=None, reset=False):
+        if LoggerHolder.singleton is None or reset:
+            LoggerHolder.singleton = LoggerHolder(logger)
+        return LoggerHolder.singleton
+    
+
+    def __init__(self, logger=None):
+        LoggerHolder.singleton = self
+        if logger is None: logger = Logger
+        self.logger = logger
+
+    def log_event(self, event):
+        self.log_event(event)
 
 
 class LogHttpServer(socketserver.TCPServer):
@@ -22,6 +43,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
+
     def do_POST(self):
         try:
             content_length = int(self.headers['Content-Length'])
@@ -32,7 +54,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
                 log_data = [log_data]
 
             for entry in log_data:
-                Logger.log_event(entry)            
+                LoggerHolder.get().log_event(entry)            
 
             self.send_response(200)
             self.send_header('Access-Control-Allow-Origin', '*')
@@ -48,6 +70,8 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def start_server(port=8000):
+    
+    LoggerHolder.get(logger=Logger , reset=True)
     server = LogHttpServer(("", port), LogHttpHandler)
     with server as httpd:
         print(f"Serving at port {port}")
@@ -59,5 +83,23 @@ def start_server(port=8000):
         except Exception as e:
             traceback.print_exc()
             print(f"Server Start Error: {e}")
+        finally:
+            httpd.server_close()
+
+
+def start_doppelganger(port):
+
+    LoggerHolder.get(logger=MimicControls , reset=True)
+    server = LogHttpServer(("", port), LogHttpHandler)
+    with server as httpd:
+        print(f"Doppelganging at port {port}")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("Doppelganger Stopped by User.")
+            pass
+        except Exception as e:
+            traceback.print_exc()
+            print(f"Doppelganger Start Error: {e}")
         finally:
             httpd.server_close()
