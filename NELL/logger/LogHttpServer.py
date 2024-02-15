@@ -4,27 +4,25 @@ import http.server
 import socketserver
 import traceback
 from NELL.logger.Logger import Logger
-from NELL.logger.MimicControls import MimicControls
-
 
 class LoggerHolder():
 
     singleton = None
-
-    @staticmethod
-    def get(logger=None, reset=False):
-        if LoggerHolder.singleton is None or reset:
-            LoggerHolder.singleton = LoggerHolder(logger)
-        return LoggerHolder.singleton
-    
 
     def __init__(self, logger=None):
         LoggerHolder.singleton = self
         if logger is None: logger = Logger
         self.logger = logger
 
+    @classmethod
+    def get(cls, logger=None):
+        if cls.singleton is None:
+            cls.singleton = LoggerHolder(logger)
+        return cls.singleton
+    
+
     def log_event(self, event):
-        self.log_event(event)
+        self.logger.log_event(event)
 
 
 class LogHttpServer(socketserver.TCPServer):
@@ -71,7 +69,7 @@ class LogHttpHandler(http.server.SimpleHTTPRequestHandler):
 
 def start_server(port=8000):
     
-    LoggerHolder.get(logger=Logger , reset=True)
+    LoggerHolder()
     server = LogHttpServer(("", port), LogHttpHandler)
     with server as httpd:
         print(f"Serving at port {port}")
@@ -83,23 +81,5 @@ def start_server(port=8000):
         except Exception as e:
             traceback.print_exc()
             print(f"Server Start Error: {e}")
-        finally:
-            httpd.server_close()
-
-
-def start_doppelganger(port):
-
-    LoggerHolder.get(logger=MimicControls , reset=True)
-    server = LogHttpServer(("", port), LogHttpHandler)
-    with server as httpd:
-        print(f"Doppelganging at port {port}")
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("Doppelganger Stopped by User.")
-            pass
-        except Exception as e:
-            traceback.print_exc()
-            print(f"Doppelganger Start Error: {e}")
         finally:
             httpd.server_close()

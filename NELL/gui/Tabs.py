@@ -112,6 +112,15 @@ class Tabs:
             self.btn_robot.disabled = False
             return
 
+
+        def cleanup(script):
+            script = script.replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>","").replace("===", "")
+            script = script.replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'","").replace("===", "")
+            script = script.replace("```", "")  
+            return script     
+            
+        
+        
         def update_ui():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -122,10 +131,8 @@ class Tabs:
                     if len(scripts) == 1 or len(scripts) > 2:
                         scripts = robot_script.split('===')
 
-                    script1 = scripts[0].replace("<inicio keyword.resource>", "").replace("<fim keyword.resource>",
-                                                                                          "").replace("===", "")
-                    script2 = scripts[1].replace("<inicio testsuit.robot>", "").replace("<fim testsuit.robot>'",
-                                                                                        "").replace("===", "")
+                    script1 = cleanup(scripts[0])
+                    script2 = cleanup(scripts[1])
 
                     self.txt_robot01.value = '*** Keywords.Resources ***\n\n' + script1.lstrip()
                     self.txt_robot02.value = '*** TestSuit.Robot ***\n\n' + script2.lstrip()
